@@ -14,7 +14,6 @@ medicao/marcos.json
 
 # Saídas de testes locais
 *.log.tmp
-amazonas.csv
 
 __pycache__/
 *.pyc
