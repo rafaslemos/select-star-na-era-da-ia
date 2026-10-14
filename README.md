@@ -80,7 +80,7 @@ Tamanho estimado da coleta completa (tabela de outubro/2026, estimativas de 5 a 
 
 | Tipo | Marcas | Modelos | Combinações modelo/ano | Requisições | Tempo a 60/min |
 |---|---|---|---|---|---|
-| Motos | 103 | 2.037 | ~9.700 | ~11.800 | ~3,3 h |
+| Motos | 103 | 2.037 | ~9.700 | ~11.800 | ~3,4 h |
 | Caminhões | 29 | 2.000 | ~11.600 (±1.600) | ~14.000 | ~3,9 h |
 | Carros | 108 | 7.385 | ~30.800 (±5.400) | ~39.400 | ~11 h |
 

@@ -213,8 +213,18 @@ Cada bloco traz: o que está na tela, o que falar (sugestão, não decore palavr
 
 ### A coleta e Para levar (32:00 – 38:00)
 
-**21. A coleta · "E todas as motos?"** · 2 min (com demo)
-- **Tela:** 103 marcas · 2.037 modelos · ~9.700 preços; "~11.800 requisições, ~3,5 horas. Feito pelo coletor que a IA escreveu: zero token."
+**21. A coleta · "A coleta completa da FIPE"** · 2 min (com demo)
+- **Tela:** tabela com os três tipos, carros em destaque:
+
+| Tipo | Marcas | Modelos | Preços | Requisições | Tempo a 60/min |
+|---|---|---|---|---|---|
+| Motos | 103 | 2.037 | ~9.700 | ~11.800 | ~3,4 h |
+| Caminhões | 29 | 2.000 | ~11.600 | ~14.000 | ~3,9 h |
+| Carros | 108 | 7.385 | ~30.800 | ~39.400 | ~11 h |
+
+  Embaixo: "Feito pelo coletor que a IA escreveu, com --tipo moto|carro|caminhao: zero token."
+- **Falar:** "Para carros são quase 40 mil requisições e 11 horas. Se a IA fizesse esse loop, cada resposta passaria pelo contexto do modelo. O coletor faz com zero token."
+- **Se perguntarem:** são estimativas do próprio coletor (marcas e modelos contados, anos por amostra de 60 modelos). Nenhuma coleta completa foi rodada. Cada tipo foi testado numa marca: Royal Enfield, MAN e Cadillac.
 - **Falar:** "A IA aprende a API uma vez. O código coleta para sempre."
 - **Demo ao vivo (opcional, ~1 min):** a AMAZONAS tem só 4 modelos, cerca de 20 requisições.
   ```bash
@@ -292,7 +302,7 @@ Cada bloco traz: o que está na tela, o que falar (sugestão, não decore palavr
 
 - Resultado igual em todas: 206 linhas, os mesmos 206 valores.
 - Royal Enfield: 59 modelos, 206 combinações, 40 Zero KM, de R$ 15.781 a R$ 37.686.
-- Motos na FIPE: 103 marcas, 2.037 modelos, ~9.700 preços, ~11.800 requisições, ~3,5 h a 60 por minuto.
+- Coleta completa a 60 por minuto: motos ~11.800 requisições (~3,4 h), caminhões ~14.000 (~3,9 h), carros ~39.400 (~11 h).
 - Contexto de partida: 61,5 mil tokens (subagente padrão) contra 5,6 mil (agente enxuto).
 - Custo total do experimento (as cinco rodadas mais o teste do processo enxuto): ~US$ 5,53.
 

@@ -156,6 +156,10 @@ code, .code { font-family: var(--font-mono); }
 .formula b { color: var(--color-brand-500); font-weight: 600; }
 .tabela.prosa td:nth-child(2) { font-family: var(--font-sans); color: var(--text-primary); }
 .tabela.prosa td { font-size: 29px; padding: 18px 24px; }
+.tabela.qtd th:not(:first-child), .tabela.qtd td:not(:first-child) { text-align: right; font-family: var(--font-mono); color: var(--text-primary); }
+.tabela.qtd td:first-child { font-family: var(--font-display); color: var(--text-primary); }
+.tabela.qtd td { font-size: 36px; padding: 22px 24px; }
+.tabela.qtd tr.destaque td { color: var(--color-brand-500); font-weight: 700; }
 .legenda i { display: inline-block; width: 22px; height: 22px; margin-right: 12px; vertical-align: -3px; }
 .barra .valor { font: 700 46px var(--font-mono); text-align: right; }
 .barra .valor small { display: block; font: 400 22px var(--font-sans); color: var(--text-muted); }
@@ -574,14 +578,23 @@ Retorno: extraia o Value da marca.
 
 <!-- ============================================================ 18. COLETA -->
 <section class="slide" data-titulo="A coleta">
-  <div class="kicker">E todas as motos?</div>
-  <div class="grid-3">
-    <div class="card"><span class="num" style="font-size:96px">103</span><p>marcas</p></div>
-    <div class="card"><span class="num" style="font-size:96px">2.037</span><p>modelos</p></div>
-    <div class="card"><span class="num" style="font-size:96px">~9.700</span><p>preços</p></div>
-  </div>
-  <p class="frag" style="margin-top:60px">~11.800 requisições, ~3,5 horas. Feito pelo coletor que a IA escreveu: <span class="marcador">zero token</span>.</p>
+  <div class="kicker">E todas as motos? E os carros e caminhões?</div>
+  <h2>A coleta completa da FIPE</h2>
+  <table class="tabela qtd">
+    <thead><tr><th>Tipo</th><th>Marcas</th><th>Modelos</th><th>Preços</th><th>Requisições</th><th>Tempo a 60/min</th></tr></thead>
+    <tbody>
+      <tr><td>Motos</td><td>103</td><td>2.037</td><td>~9.700</td><td>~11.800</td><td>~3,4 h</td></tr>
+      <tr><td>Caminhões</td><td>29</td><td>2.000</td><td>~11.600</td><td>~14.000</td><td>~3,9 h</td></tr>
+      <tr class="destaque"><td>Carros</td><td>108</td><td>7.385</td><td>~30.800</td><td>~39.400</td><td>~11 h</td></tr>
+    </tbody>
+  </table>
+  <p class="frag" style="margin-top:48px">Feito pelo coletor que a IA escreveu, com <span class="mono">--tipo moto|carro|caminhao</span>: <span class="marcador">zero token</span>.</p>
   <p class="frag">A IA aprende a API uma vez. <strong>O código coleta para sempre.</strong></p>
+  <aside class="notas">
+    <p>Estimativas do próprio coletor da Rodada 4a (opção --estimar): marcas e modelos são contagens exatas; os anos vêm de uma amostra de 60 modelos sorteados, por isso os preços têm margem (carros ±5.400, caminhões ±1.600). O tempo já inclui ~3% de repetições por bloqueio 429. Nenhuma coleta completa foi rodada.</p>
+    <p>Testado em uma marca de cada tipo: Royal Enfield (motos, 206 linhas), MAN (caminhões, 23) e Cadillac (carros, 11).</p>
+    <p>Se a IA fizesse esse loop, cada uma dessas ~39 mil respostas passaria pelo contexto do modelo.</p>
+  </aside>
 </section>
 
 <!-- ============================================================ 18a. ANATOMIA DO PROMPT -->
