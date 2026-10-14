@@ -80,3 +80,7 @@ O medidor soma o `usage` gravado no transcript da sessão (`~/.claude/projects/�
 - **Dados:** valores da tabela de outubro de 2026, coletados em 5 e 6 de outubro de 2026.
 - **Prompts:** os prompts das rodadas 1 a 3 foram extraídos dos transcripts. No da Rodada 2, os valores dos cookies do navegador foram omitidos; a API não precisa deles.
 - **Medição:** cada rodada rodou uma vez. Outra execução pode variar alguns centavos.
+
+## Licença
+
+[MIT](LICENSE): pode usar, copiar, modificar e redistribuir, mantendo o aviso de direitos autorais.
