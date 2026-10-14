@@ -171,10 +171,12 @@ code, .code { font-family: var(--font-mono); }
 .frase { font: 700 92px/1.12 var(--font-display); letter-spacing: -.025em; max-width: 1600px; }
 .contato { display: flex; gap: 70px; margin-top: 80px; font: 500 32px var(--font-mono); color: var(--text-secondary); }
 .contato a { color: inherit; text-decoration: none; }
-.fechamento { display: grid; grid-template-columns: 1fr 440px; gap: 90px; align-items: center; }
-.qr-card { display: flex; flex-direction: column; align-items: center; gap: 22px; background: #fff; padding: 34px 34px 28px; text-decoration: none; }
-.qr-card .qr { width: 372px; height: 372px; display: block; }
-.qr-card span { font: 600 24px var(--font-sans); color: var(--ink); text-align: center; }
+.fechamento { display: grid; grid-template-columns: 1fr auto; gap: 80px; align-items: center; }
+.qrs { display: flex; gap: 32px; }
+.qr-card { display: flex; flex-direction: column; align-items: center; gap: 18px; background: #fff; padding: 26px 26px 22px; text-decoration: none; }
+.qr-card .qr { width: 300px; height: 300px; display: block; }
+.qr-card span { font: 700 28px var(--font-display); color: var(--ink); text-align: center; }
+.qr-card small { display: block; font: 400 21px var(--font-sans); color: var(--text-on-paper-secondary); margin-top: 4px; }
 .contato a:hover { color: var(--text-primary); }
 .contato b { color: var(--color-brand-500); font-weight: 600; margin-right: 12px; }
 
@@ -706,21 +708,27 @@ HTTP seguindo o conhecimento do pedido.
 <section class="slide sem-moldura capa" data-titulo="Obrigado">
   <div class="fechamento">
     <div>
-      <div class="frase" style="font-size:80px">A IA não substitui quem entende a fonte de dados.<br><span class="laranja">Ela multiplica o valor dessa pessoa.</span></div>
-      <div class="contato" style="flex-direction:column;gap:22px;margin-top:64px">
+      <div class="frase" style="font-size:60px">A IA não substitui quem entende a fonte de dados.<br><span class="laranja">Ela multiplica o valor dessa pessoa.</span></div>
+      <div class="contato" style="flex-direction:column;gap:18px;margin-top:56px;font-size:26px">
         <a href="https://github.com/rafaslemos/select-star-na-era-da-ia" target="_blank" rel="noopener"><b>GitHub</b>rafaslemos/select-star-na-era-da-ia</a>
         <a href="https://www.linkedin.com/in/orafaslemos/" target="_blank" rel="noopener"><b>LinkedIn</b>/in/orafaslemos</a>
       </div>
       <div class="autor" style="margin-top:64px"><img src="assets/logo-chora-api.png" alt="Chora API Revolution" style="height:84px"></div>
     </div>
-    <a class="qr-card" href="https://github.com/rafaslemos/select-star-na-era-da-ia" target="_blank" rel="noopener">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" class="qr" role="img" aria-label="QR code do repositório no GitHub" shape-rendering="crispEdges"><path fill="#fff" d="M0 0h37v37h-37z"/><path class="qrline" stroke="#0a0a0a" d="M2 2.5h7m1 0h1m1 0h2m5 0h4m2 0h1m2 0h7m-33 1h1m5 0h1m1 0h1m2 0h1m2 0h1m1 0h2m4 0h3m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m3 0h4m1 0h2m4 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h2m2 0h1m1 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m3 0h1m2 0h2m1 0h1m6 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m2 0h3m2 0h9m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h2m1 0h1m3 0h3m5 0h1m-24 1h1m1 0h2m1 0h3m1 0h2m3 0h2m1 0h2m2 0h2m1 0h1m1 0h1m2 0h1m1 0h2m-33 1h1m1 0h3m3 0h4m1 0h2m1 0h1m1 0h4m1 0h1m2 0h2m1 0h2m1 0h1m-31 1h1m1 0h1m1 0h1m1 0h2m1 0h3m2 0h2m2 0h1m1 0h2m1 0h5m1 0h2m-32 1h3m5 0h2m1 0h1m2 0h1m2 0h1m6 0h1m1 0h1m1 0h1m1 0h1m-30 1h1m3 0h2m2 0h1m1 0h1m1 0h1m1 0h1m1 0h1m3 0h4m2 0h2m1 0h2m-32 1h2m1 0h2m1 0h2m2 0h4m2 0h1m1 0h4m1 0h1m2 0h1m3 0h1m-27 1h2m1 0h4m1 0h2m4 0h3m4 0h2m1 0h1m-29 1h1m1 0h3m1 0h2m1 0h1m3 0h2m5 0h1m1 0h1m1 0h3m1 0h2m-29 1h2m2 0h2m2 0h2m2 0h1m3 0h1m2 0h2m2 0h2m1 0h3m-31 1h3m1 0h1m5 0h4m1 0h1m2 0h1m1 0h1m1 0h5m1 0h2m1 0h2m-32 1h2m3 0h2m1 0h2m1 0h2m1 0h2m1 0h1m1 0h1m3 0h1m2 0h2m1 0h2m-29 1h3m1 0h2m1 0h1m1 0h2m2 0h2m1 0h1m3 0h4m1 0h1m2 0h2m-33 1h1m2 0h4m2 0h2m2 0h4m4 0h1m5 0h1m1 0h2m-31 1h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h5m1 0h4m1 0h1m1 0h2m3 0h1m1 0h1m-30 1h2m1 0h1m4 0h3m1 0h1m4 0h2m1 0h5m2 0h3m-32 1h5m1 0h4m1 0h1m1 0h2m2 0h3m3 0h1m1 0h2m1 0h1m1 0h2m-33 1h1m1 0h2m1 0h2m3 0h1m3 0h1m2 0h1m4 0h8m1 0h1m-24 1h4m2 0h3m2 0h2m3 0h1m3 0h2m-30 1h7m1 0h6m3 0h4m1 0h3m1 0h1m1 0h1m-29 1h1m5 0h1m1 0h2m1 0h3m1 0h4m1 0h5m3 0h5m-33 1h1m1 0h3m1 0h1m4 0h1m1 0h1m2 0h6m1 0h6m1 0h1m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m1 0h2m2 0h2m2 0h4m3 0h1m1 0h1m2 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m5 0h2m3 0h1m1 0h1m3 0h2m2 0h1m-31 1h1m5 0h1m2 0h2m1 0h1m1 0h1m2 0h1m4 0h3m1 0h4m2 0h1m-33 1h7m1 0h1m1 0h1m2 0h1m2 0h3m2 0h1m3 0h2m1 0h1m1 0h1"/></svg>
-      <span>Deck, prompts, coletores e medições</span>
-    </a>
+    <div class="qrs">
+      <a class="qr-card" href="https://github.com/rafaslemos/select-star-na-era-da-ia" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" class="qr" role="img" aria-label="QR code do repositório no GitHub" shape-rendering="crispEdges"><path fill="#fff" d="M0 0h37v37h-37z"/><path class="qrline" stroke="#0a0a0a" d="M2 2.5h7m1 0h1m1 0h2m5 0h4m2 0h1m2 0h7m-33 1h1m5 0h1m1 0h1m2 0h1m2 0h1m1 0h2m4 0h3m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m3 0h4m1 0h2m4 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h2m2 0h1m1 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m3 0h1m2 0h2m1 0h1m6 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m2 0h3m2 0h9m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h2m1 0h1m3 0h3m5 0h1m-24 1h1m1 0h2m1 0h3m1 0h2m3 0h2m1 0h2m2 0h2m1 0h1m1 0h1m2 0h1m1 0h2m-33 1h1m1 0h3m3 0h4m1 0h2m1 0h1m1 0h4m1 0h1m2 0h2m1 0h2m1 0h1m-31 1h1m1 0h1m1 0h1m1 0h2m1 0h3m2 0h2m2 0h1m1 0h2m1 0h5m1 0h2m-32 1h3m5 0h2m1 0h1m2 0h1m2 0h1m6 0h1m1 0h1m1 0h1m1 0h1m-30 1h1m3 0h2m2 0h1m1 0h1m1 0h1m1 0h1m1 0h1m3 0h4m2 0h2m1 0h2m-32 1h2m1 0h2m1 0h2m2 0h4m2 0h1m1 0h4m1 0h1m2 0h1m3 0h1m-27 1h2m1 0h4m1 0h2m4 0h3m4 0h2m1 0h1m-29 1h1m1 0h3m1 0h2m1 0h1m3 0h2m5 0h1m1 0h1m1 0h3m1 0h2m-29 1h2m2 0h2m2 0h2m2 0h1m3 0h1m2 0h2m2 0h2m1 0h3m-31 1h3m1 0h1m5 0h4m1 0h1m2 0h1m1 0h1m1 0h5m1 0h2m1 0h2m-32 1h2m3 0h2m1 0h2m1 0h2m1 0h2m1 0h1m1 0h1m3 0h1m2 0h2m1 0h2m-29 1h3m1 0h2m1 0h1m1 0h2m2 0h2m1 0h1m3 0h4m1 0h1m2 0h2m-33 1h1m2 0h4m2 0h2m2 0h4m4 0h1m5 0h1m1 0h2m-31 1h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h5m1 0h4m1 0h1m1 0h2m3 0h1m1 0h1m-30 1h2m1 0h1m4 0h3m1 0h1m4 0h2m1 0h5m2 0h3m-32 1h5m1 0h4m1 0h1m1 0h2m2 0h3m3 0h1m1 0h2m1 0h1m1 0h2m-33 1h1m1 0h2m1 0h2m3 0h1m3 0h1m2 0h1m4 0h8m1 0h1m-24 1h4m2 0h3m2 0h2m3 0h1m3 0h2m-30 1h7m1 0h6m3 0h4m1 0h3m1 0h1m1 0h1m-29 1h1m5 0h1m1 0h2m1 0h3m1 0h4m1 0h5m3 0h5m-33 1h1m1 0h3m1 0h1m4 0h1m1 0h1m2 0h6m1 0h6m1 0h1m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m1 0h2m2 0h2m2 0h4m3 0h1m1 0h1m2 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m5 0h2m3 0h1m1 0h1m3 0h2m2 0h1m-31 1h1m5 0h1m2 0h2m1 0h1m1 0h1m2 0h1m4 0h3m1 0h4m2 0h1m-33 1h7m1 0h1m1 0h1m2 0h1m2 0h3m2 0h1m3 0h2m1 0h1m1 0h1"/></svg>
+        <span>GitHub<small>deck, prompts e coletores</small></span>
+      </a>
+      <a class="qr-card" href="https://www.linkedin.com/in/orafaslemos/" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" class="qr" role="img" aria-label="QR code do LinkedIn de Rafael Lemos" shape-rendering="crispEdges"><path fill="#fff" d="M0 0h33v33h-33z"/><path class="qrline" stroke="#0a0a0a" d="M2 2.5h7m2 0h3m2 0h1m3 0h1m3 0h7m-29 1h1m5 0h1m1 0h1m5 0h1m1 0h2m2 0h1m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m2 0h1m2 0h3m2 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m2 0h2m2 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h4m2 0h5m1 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m4 0h4m7 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h2m1 0h1m2 0h1m1 0h1m2 0h2m-21 1h1m5 0h1m1 0h1m2 0h4m2 0h3m1 0h2m2 0h3m-28 1h2m1 0h1m3 0h3m2 0h1m2 0h1m1 0h4m2 0h2m1 0h2m-27 1h1m1 0h2m1 0h3m4 0h1m1 0h3m4 0h1m-18 1h1m4 0h3m1 0h2m3 0h2m2 0h1m1 0h1m-24 1h5m3 0h2m2 0h2m4 0h1m1 0h2m4 0h1m-29 1h1m1 0h2m1 0h1m1 0h2m2 0h3m1 0h6m1 0h1m1 0h1m2 0h2m-29 1h3m3 0h1m1 0h3m2 0h4m1 0h1m1 0h4m1 0h2m-27 1h1m4 0h1m2 0h1m2 0h1m4 0h1m3 0h5m1 0h1m1 0h1m-29 1h1m2 0h1m1 0h2m1 0h3m4 0h1m1 0h1m1 0h1m3 0h1m1 0h2m-27 1h2m1 0h2m2 0h1m3 0h1m3 0h6m1 0h3m1 0h3m-29 1h2m4 0h2m2 0h1m2 0h4m2 0h2m4 0h1m2 0h1m-29 1h1m1 0h2m4 0h3m1 0h1m2 0h2m1 0h1m1 0h1m1 0h3m-25 1h1m1 0h3m1 0h1m3 0h1m4 0h1m1 0h2m1 0h5m1 0h3m-21 1h1m3 0h4m1 0h2m1 0h1m3 0h2m-26 1h7m2 0h3m1 0h5m1 0h2m1 0h1m1 0h3m-27 1h1m5 0h1m3 0h2m1 0h1m5 0h2m3 0h1m-25 1h1m1 0h3m1 0h1m3 0h4m1 0h2m2 0h7m1 0h1m-28 1h1m1 0h3m1 0h1m4 0h1m3 0h5m1 0h1m1 0h1m1 0h2m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h2m3 0h1m1 0h1m1 0h1m1 0h7m-28 1h1m5 0h1m5 0h2m1 0h2m6 0h1m1 0h2m1 0h1m-29 1h7m1 0h1m1 0h1m2 0h5m1 0h1m2 0h5"/></svg>
+        <span>LinkedIn<small>Rafael Lemos</small></span>
+      </a>
+    </div>
   </div>
   <aside class="notas">
     <h4>41:00 · Perguntas (4 min)</h4>
-    <p>Deixe este slide na tela durante as perguntas: o QR code leva ao repositório com tudo o que foi mostrado.</p>
+    <p>Deixe este slide na tela durante as perguntas: um QR code leva ao repositório com tudo o que foi mostrado, o outro ao LinkedIn.</p>
   </aside>
 </section>
 

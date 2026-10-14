@@ -28,7 +28,7 @@ Deck: `slides/index.html` (o link publicado no Apps Script não vai no repositó
 **Uma semana antes**
 - [ ] Ensaiar com cronômetro pelo menos duas vezes inteiras.
 - [ ] Ensaiar a demo ao vivo (slide 21) na rede de casa e numa rede de celular.
-- [ ] Testar o QR code do último slide com o celular, de longe, na tela do evento.
+- [ ] Testar os dois QR codes do último slide com o celular, de longe, na tela do evento.
 - [ ] Os números foram medidos em 5 e 6 de outubro de 2026, com a tabela de outubro/2026. Se alguém consultar a FIPE no dia, os valores podem ter mudado; diga "medido em outubro".
 
 **No dia**
@@ -273,8 +273,8 @@ Cada bloco traz: o que está na tela, o que falar (sugestão, não decore palavr
 ### Encerramento (41:00 – 45:00)
 
 **29. Obrigado · "A IA não substitui quem entende a fonte de dados. Ela multiplica o valor dessa pessoa."**
-- **Tela:** a frase, o GitHub e o LinkedIn, e um QR code para o repositório (github.com/rafaslemos/select-star-na-era-da-ia).
-- **Falar:** leia a frase e agradeça. "Tudo o que vocês viram está no repositório: o deck, os prompts das cinco rodadas, os coletores e o medidor de tokens. É só apontar o celular para o QR code."
+- **Tela:** a frase, o GitHub e o LinkedIn, e dois QR codes lado a lado: o do repositório (github.com/rafaslemos/select-star-na-era-da-ia) e o do LinkedIn (/in/orafaslemos).
+- **Falar:** leia a frase e agradeça. "Tudo o que vocês viram está no repositório: o deck, os prompts das cinco rodadas, os coletores e o medidor de tokens. É só apontar o celular para o QR code da esquerda; o da direita é o meu LinkedIn."
 - Deixe este slide na tela durante as perguntas.
 
 ---
@@ -358,6 +358,9 @@ O conceito vale: os modelos não guardam estado, e o histórico é reenviado a c
 
 **"E se a API mudar?"**
 O coletor quebra, e aí a IA volta a trabalhar: com o conhecimento estruturado e o erro na mão, a correção é barata. O que muda é que a IA trabalha só quando precisa, não a cada coleta.
+
+**"Dá para fazer com carros e caminhões?"**
+Sim: a API é a mesma, muda só o código do tipo de veículo. O coletor aceita `--tipo carro` ou `--tipo caminhao`. A coleta completa de carros é bem maior: 108 marcas, 7.385 modelos, ~30.800 preços, ~39.400 requisições e ~11 horas a 60 por minuto. Caminhões: 29 marcas, 2.000 modelos, ~11.600 preços, ~3,9 horas.
 
 **"Por que não deixar a IA fazer a coleta inteira?"**
 Seriam ~11.800 requisições, e cada resposta passaria pelo contexto do modelo. É o SELECT * levado ao extremo. O coletor faz o mesmo trabalho com zero token.

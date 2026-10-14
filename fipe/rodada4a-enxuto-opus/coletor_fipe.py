@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Coletor da Tabela FIPE (motos) - somente biblioteca padrao.
+"""Coletor da Tabela FIPE (motos, carros ou caminhoes) - somente biblioteca padrao.
 
 Uso:
   python coletor_fipe.py                       # coleta completa do mes mais recente
   python coletor_fipe.py --marca "Royal Enfield" --csv amostra_royal_enfield.csv
   python coletor_fipe.py --estimar             # conta marcas/modelos e sorteia 60 modelos
   python coletor_fipe.py --tabela 338          # mes de referencia especifico
+  python coletor_fipe.py --tipo carro --estimar  # carros (ou --tipo caminhao); padrao: moto
 
 Controle de taxa: no maximo 1 requisicao por segundo (60/min), sequencial.
 Cache em disco: uma resposta valida por arquivo JSON; erros nunca sao gravados.
@@ -26,8 +27,8 @@ import urllib.parse
 import urllib.request
 
 BASE = "https://veiculos.fipe.org.br/api/veiculos/"
-TIPO_COD = 2          # 1 carro, 2 moto, 3 caminhao
-TIPO_STR = "moto"
+# tipo -> (codigoTipoVeiculo, tipoVeiculo usado na consulta de valor)
+TIPOS = {"carro": (1, "carro"), "moto": (2, "moto"), "caminhao": (3, "caminhao")}
 HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -47,7 +48,8 @@ class ErroFipe(Exception):
 
 
 class Cliente:
-    def __init__(self, cache_dir, intervalo=1.0, tentativas=8):
+    def __init__(self, cache_dir, intervalo=1.0, tentativas=8, tipo="moto"):
+        self.tipo_cod, self.tipo_str = TIPOS[tipo]
         self.cache_dir = cache_dir
         self.intervalo = intervalo
         self.tentativas = tentativas
@@ -120,22 +122,22 @@ class Cliente:
         return self.post("ConsultarTabelaDeReferencia", {}, chave_extra=dt.date.today().isoformat())
 
     def marcas(self, tab):
-        return self.post("ConsultarMarcas", {"codigoTabelaReferencia": tab, "codigoTipoVeiculo": TIPO_COD})
+        return self.post("ConsultarMarcas", {"codigoTabelaReferencia": tab, "codigoTipoVeiculo": self.tipo_cod})
 
     def modelos(self, tab, marca):
-        r = self.post("ConsultarModelos", {"codigoTipoVeiculo": TIPO_COD, "codigoTabelaReferencia": tab,
+        r = self.post("ConsultarModelos", {"codigoTipoVeiculo": self.tipo_cod, "codigoTabelaReferencia": tab,
                                            "codigoMarca": marca})
         return r.get("Modelos", [])  # 'Anos' daqui e da marca inteira: ignorar
 
     def anos(self, tab, marca, modelo):
-        return self.post("ConsultarAnoModelo", {"codigoTipoVeiculo": TIPO_COD, "codigoTabelaReferencia": tab,
+        return self.post("ConsultarAnoModelo", {"codigoTipoVeiculo": self.tipo_cod, "codigoTabelaReferencia": tab,
                                                 "codigoMarca": marca, "codigoModelo": modelo})
 
     def valor(self, tab, marca, modelo, ano, comb):
         return self.post("ConsultarValorComTodosParametros", {
             "codigoTabelaReferencia": tab, "codigoMarca": marca, "codigoModelo": modelo,
-            "codigoTipoVeiculo": TIPO_COD, "anoModelo": ano, "codigoTipoCombustivel": comb,
-            "tipoVeiculo": TIPO_STR, "tipoConsulta": "tradicional"})
+            "codigoTipoVeiculo": self.tipo_cod, "anoModelo": ano, "codigoTipoCombustivel": comb,
+            "tipoVeiculo": self.tipo_str, "tipoConsulta": "tradicional"})
 
 
 def limpa(s):
@@ -203,7 +205,7 @@ def coletar(cli, tab, mes, marcas, csv_path, log):
                 linhas.append({
                     "codigo_tabela_referencia": tab,
                     "mes_referencia": limpa(v.get("MesReferencia")) or mes,
-                    "tipo_veiculo": v.get("TipoVeiculo", TIPO_COD),
+                    "tipo_veiculo": v.get("TipoVeiculo", cli.tipo_cod),
                     "codigo_marca": cm, "marca": limpa(v.get("Marca")) or nm,
                     "codigo_modelo": cmo, "modelo": limpa(v.get("Modelo")) or nmo,
                     "ano_codigo": ano_cod, "ano_modelo": v.get("AnoModelo", ano),
@@ -254,10 +256,11 @@ def estimar(cli, tab, marcas, n_amostra, seed, log):
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     aqui = os.path.dirname(os.path.abspath(__file__))
-    p = argparse.ArgumentParser(description="Coletor FIPE de motos")
+    p = argparse.ArgumentParser(description="Coletor FIPE de motos, carros ou caminhoes")
+    p.add_argument("--tipo", choices=list(TIPOS), default="moto", help="tipo de veiculo (padrao: moto)")
     p.add_argument("--tabela", help="codigoTabelaReferencia (padrao: mais recente)")
     p.add_argument("--marca", help="nome ou codigo da marca")
-    p.add_argument("--csv", default=os.path.join(aqui, "fipe_motos.csv"))
+    p.add_argument("--csv", help="arquivo de saida (padrao: fipe_<tipo>.csv)")
     p.add_argument("--cache", default=os.path.join(aqui, "cache"))
     p.add_argument("--estimar", action="store_true")
     p.add_argument("--amostra", type=int, default=60)
@@ -267,11 +270,12 @@ def main():
     a = p.parse_args()
 
     log = (lambda s: None) if a.quieto else (lambda s: print(s, flush=True))
-    cli = Cliente(a.cache, intervalo=max(1.0, a.intervalo))
+    a.csv = a.csv or os.path.join(aqui, f"fipe_{a.tipo}.csv")
+    cli = Cliente(a.cache, intervalo=max(1.0, a.intervalo), tipo=a.tipo)
     t0 = time.time()
     tab, mes = escolher_tabela(cli, a.tabela)
     marcas = filtrar_marcas(cli.marcas(tab), a.marca)
-    print(f"Tabela {tab} ({mes}); marcas selecionadas: {len(marcas)}")
+    print(f"Tipo: {a.tipo}; tabela {tab} ({mes}); marcas selecionadas: {len(marcas)}")
     if a.estimar:
         r = estimar(cli, tab, marcas, a.amostra, a.seed, log)
         print(json.dumps(r, ensure_ascii=False, indent=2))

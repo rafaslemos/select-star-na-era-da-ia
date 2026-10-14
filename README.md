@@ -51,10 +51,40 @@ Abra http://localhost:8765. Teclas: `→` avança, `←` volta, `F` tela cheia, 
 
 **Rodar um coletor (sem IA, zero token)**
 
+O coletor da Rodada 4a é um script Python comum: só biblioteca padrão e requisições ao site da FIPE, sem nenhuma chamada a modelo de IA. A IA gastou tokens para escrevê-lo; rodá-lo não gasta nada.
+
 ```bash
 cd fipe/rodada4a-enxuto-opus
 python coletor_fipe.py --marca AMAZONAS --csv amazonas.csv
 ```
+
+Opções principais:
+
+| Opção | Para quê |
+|---|---|
+| `--tipo moto\|carro\|caminhao` | Tipo de veículo (padrão: `moto`) |
+| `--marca NOME` | Coleta só uma marca (nome ou código) |
+| `--tabela CODIGO` | Mês de referência (padrão: o mais recente) |
+| `--estimar` | Só estima o tamanho da coleta completa: conta marcas e modelos e sorteia 60 modelos para estimar os anos |
+| `--csv ARQUIVO` | Arquivo de saída (padrão: `fipe_<tipo>.csv`) |
+| `--cache PASTA` | Onde guardar as respostas (padrão: `cache/`); rodar de novo reaproveita o que já foi baixado |
+
+```bash
+python coletor_fipe.py --tipo carro --estimar      # tamanho da coleta de carros
+python coletor_fipe.py --tipo caminhao --marca VOLVO
+```
+
+O coletor faz no máximo 1 requisição por segundo, espera e tenta de novo quando recebe HTTP 429, e nunca grava erros no cache. Antes de uma coleta completa, rode `--estimar`: dependendo do tipo, ela pode levar muitas horas.
+
+Tamanho estimado da coleta completa (tabela de outubro/2026, estimativas de 5 a 14 de outubro de 2026):
+
+| Tipo | Marcas | Modelos | Combinações modelo/ano | Requisições | Tempo a 60/min |
+|---|---|---|---|---|---|
+| Motos | 103 | 2.037 | ~9.700 | ~11.800 | ~3,3 h |
+| Caminhões | 29 | 2.000 | ~11.600 (±1.600) | ~14.000 | ~3,9 h |
+| Carros | 108 | 7.385 | ~30.800 (±5.400) | ~39.400 | ~11 h |
+
+Marcas e modelos são contagens exatas. O número de anos vem de uma amostra de 60 modelos sorteados, por isso as combinações têm margem.
 
 **Repetir a Rodada 4 e medir**
 
