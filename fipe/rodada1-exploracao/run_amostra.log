@@ -1,0 +1,32 @@
+Tabela 338 (outubro/2026), tipo 2=moto, 1 marca(s)
+[1/1] Royal Enfield (192): 59 modelos
+    10/59 modelos | linhas=37 | {'rede': 50, 'cache': 0, 'retentativas': 0}
+  ! ConsultarAnoModelo falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+    20/59 modelos | linhas=65 | {'rede': 93, 'cache': 0, 'retentativas': 5}
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+    30/59 modelos | linhas=99 | {'rede': 139, 'cache': 0, 'retentativas': 7}
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+    40/59 modelos | linhas=128 | {'rede': 182, 'cache': 0, 'retentativas': 11}
+  ! ConsultarAnoModelo falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+    50/59 modelos | linhas=168 | {'rede': 238, 'cache': 0, 'retentativas': 17}
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarAnoModelo falhou (HTTP 429); tentativa 1, aguardando 5s
+  ! ConsultarValorComTodosParametros falhou (HTTP 429); tentativa 1, aguardando 5s
+OK: 206 linhas em amostra_royal_enfield.csv
+requisicoes: rede=291 cache=0 retentativas=23 | tempo 298s

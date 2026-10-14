@@ -1,0 +1,20 @@
+# Respostas da FIPE guardadas pelos coletores (regeneradas ao rodar)
+cache/
+cache_fipe/
+cache-demo/
+
+# Gerado por slides/build.py
+slides/apps-script/Index.html
+
+# Liga a pasta a um projeto pessoal do Apps Script
+.clasp.json
+
+# Marcos locais do medidor
+medicao/marcos.json
+
+# Saídas de testes locais
+*.log.tmp
+amazonas.csv
+
+__pycache__/
+*.pyc

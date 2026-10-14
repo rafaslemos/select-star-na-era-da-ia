@@ -1,0 +1,23 @@
+Tabela 338 (outubro/2026), tipo 2=moto, 103 marca(s)
+fator anos/modelo medido em 59 modelos do cache: 3.49
+  20/103 marcas, 337 modelos ate agora
+  40/103 marcas, 716 modelos ate agora
+  ! ConsultarModelos falhou (HTTP 429); tentativa 1, aguardando 5s
+  60/103 marcas, 1226 modelos ate agora
+  ! ConsultarModelos falhou (HTTP 429); tentativa 1, aguardando 5s
+  80/103 marcas, 1424 modelos ate agora
+  ! ConsultarModelos falhou (HTTP 429); tentativa 1, aguardando 5s
+  100/103 marcas, 1869 modelos ate agora
+  ! ConsultarAnoModelo falhou (HTTP 429); tentativa 1, aguardando 5s
+  amostra de anos: 25/100
+  amostra de anos: 50/100
+  ! ConsultarAnoModelo falhou (HTTP 429); tentativa 1, aguardando 5s
+  amostra de anos: 75/100
+  ! ConsultarAnoModelo falhou (HTTP 429); tentativa 1, aguardando 5s
+  amostra de anos: 100/100
+fator anos/modelo na amostra aleatoria de 100 modelos: 4.41
+marcas=103 modelos=2037 combinacoes_estimadas=8983 (fator 4.41 por modelo)
+requisicoes_estimadas=11125 tempo=3.1 h  [taxa nominal (1.00 req/s)]
+requisicoes_estimadas=11125 tempo=1.5 h  [taxa teto 2 req/s]
+requisicoes_estimadas=11125 tempo=3.4 h  [taxa efetiva observada ~0,9 req/s (com 429)]
+requisicoes: rede=203 cache=8 retentativas=6 | tempo 228s

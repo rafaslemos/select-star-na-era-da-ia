@@ -1,0 +1,96 @@
+{
+  "duration_api_ms": 52826,
+  "stop_reason": "end_turn",
+  "total_cost_usd": 0.16595220000000002,
+  "usage": {
+    "input_tokens": 12,
+    "cache_creation_input_tokens": 17295,
+    "cache_read_input_tokens": 66591,
+    "output_tokens": 8343,
+    "output_tokens_details": {
+      "thinking_tokens": 593
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 17295,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 534,
+        "cache_read_input_tokens": 16803,
+        "cache_creation_input_tokens": 492,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 492
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-sonnet-5-5": {
+      "inputTokens": 12,
+      "outputTokens": 8343,
+      "cacheReadInputTokens": 66591,
+      "cacheCreationInputTokens": 17295,
+      "webSearchRequests": 0,
+      "costUSD": 0.16595220000000002,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 593,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 6,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Coletor pronto e validado na Royal Enfield. Não rodei a coleta completa.\n\n**Amostra Royal Enfield** (tabela 338, outubro/2026): 59 modelos e 206 linhas modelo/ano com valor. Não houve erros. Foram 277 requisições reais, em cerca de 5,5 min.\n\n**Estimativa da coleta completa:**\n- **Marcas:** 103.\n- **Modelos:** 2.037.\n- **Anos por modelo:** 4,75 em média, a partir de 60 modelos sorteados (285 anos).\n- **Combinações modelo/ano:** cerca de 9.676.\n- **Requisições:** cerca de 11.818.\n- **Tempo a 60 req/min:** cerca de 197 min (3,3 h), mais as repetições por 429, que ocorrem em cerca de 3% das chamadas.\n\nA Royal Enfield tem 3,5 anos por modelo, abaixo da média estimada, então o total real pode variar.\n\nCorrigi no `coletor_fipe.py` a conta de tempo que o `--estimar` imprimia (horas = requisições/3600). Só conferi a sintaxe do arquivo depois do ajuste e não rodei o `--estimar` de novo.\n\nOs arquivos estão em `fipe\\rodada4b-enxuto-sonnet\\`:\n- `API.md`\n- `coletor_fipe.py`\n- `amostra_royal_enfield.csv`\n- `diario.md`\n\nA estimativa está numa seção do `API.md`.",
+  "ttft_ms": 4828,
+  "type": "result",
+  "duration_ms": 598622,
+  "ttft_stream_ms": 1963,
+  "time_to_request_ms": 834,
+  "first_content_frame_ms": 1964,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

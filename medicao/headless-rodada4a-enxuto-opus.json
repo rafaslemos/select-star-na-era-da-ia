@@ -1,0 +1,96 @@
+{
+  "duration_api_ms": 97609,
+  "stop_reason": "end_turn",
+  "total_cost_usd": 0.36597240000000003,
+  "usage": {
+    "input_tokens": 10,
+    "cache_creation_input_tokens": 17276,
+    "cache_read_input_tokens": 57722,
+    "output_tokens": 10809,
+    "output_tokens_details": {
+      "thinking_tokens": 904
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 17276,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 710,
+        "cache_read_input_tokens": 16436,
+        "cache_creation_input_tokens": 3348,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 3348
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-opus-5-5": {
+      "inputTokens": 10,
+      "outputTokens": 10809,
+      "cacheReadInputTokens": 57722,
+      "cacheCreationInputTokens": 17276,
+      "webSearchRequests": 0,
+      "costUSD": 0.36597240000000003,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 904,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 6,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "O coletor rodou na Royal Enfield inteira (tabela 338, outubro/2026) e devolveu 206 combinações modelo/ano, todas com valor, sem nenhuma falha. A coleta completa não foi rodada, como pedido.\n\n**Amostra Royal Enfield** (marca 192)\n- 59 modelos e 206 linhas no CSV, sendo 40 Zero KM (ano 32000). Os anos vão de 2013 a 2027.\n- Exemplo de linha conferida: Bullet 500 2020, código FIPE 879008-6, valor `R$ 20.684,00` → `20684.00`.\n- Foram 276 requisições em 330 s. Dessas, 8 foram repetições depois de HTTP 429, cerca de 3%, como o conhecimento previa.\n\n**Estimativa da coleta completa de motos**\n| Item | Valor |\n|---|---|\n| Marcas | 103 (contagem exata) |\n| Modelos | 2.037 (contagem exata) |\n| Anos por modelo | média de 4,75 numa amostra de 60 modelos sorteados |\n| Combinações modelo/ano | cerca de 9.676 (intervalo de 95%: ±2.111) |\n| Requisições | cerca de 11.800; com os 429, cerca de 12.170 |\n| Tempo a 60 req/min | cerca de 3,4 h; contando as esperas de 5 a 10 s após cada 429, deve ficar entre 3,5 e 4 h |\n\nAs respostas da amostra e da estimativa ficaram no cache em disco, e a coleta completa vai reaproveitá-las. Para rodá-la, basta `python coletor_fipe.py`; se for interrompida, é só rodar de novo que ela continua de onde parou.\n\nArquivos em `fipe\\rodada4a-enxuto-opus\\`:\n- `API.md` (inclui a seção da estimativa)\n- `coletor_fipe.py`\n- `amostra_royal_enfield.csv`\n- `diario.md`",
+  "ttft_ms": 12222,
+  "type": "result",
+  "duration_ms": 632087,
+  "ttft_stream_ms": 1854,
+  "time_to_request_ms": 383,
+  "first_content_frame_ms": 1854,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

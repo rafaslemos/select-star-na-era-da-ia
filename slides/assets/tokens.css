@@ -1,0 +1,53 @@
+/* Tokens do Chora API para as skills de conteúdo (design-conteudo / design-stories).
+   Origem: .agents/skills/chora-api-design/colors_and_type.css (identidade Revolution:
+   preto profundo + Laranja Revolution #ff5b00, Sora + Outfit). Os NOMES abaixo são os que
+   as skills exigem (ver design-conteudo/tokens/mapa.json); os valores são da marca. */
+:root {
+  /* superfície: a marca é dark-first, então o "claro" das peças é preto */
+  --surface-base: #0a0a0a;
+  --surface-card: #111111;
+  --border-default: #2a2a2a;
+
+  /* texto */
+  --text-primary:   #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-muted:     #666666;
+
+  /* marca: Laranja Revolution */
+  --color-brand-100: #2a0e00;  /* texto de apoio sobre laranja cheio (tema fogo) */
+  --color-brand-200: #ffb48a;  /* texto de apoio sobre laranja queimado (tema escuro) */
+  --color-brand-500: #ff5b00;  /* identidade */
+  --color-brand-600: #7a2c00;  /* traço discreto sobre laranja cheio */
+  --color-brand-700: #d24d00;  /* traço discreto sobre laranja queimado */
+  --color-brand-900: #2b0f00;  /* laranja queimado (fundo do tema escuro) */
+
+  /* destaque secundário: laranja claro (mantém a peça numa só cor) */
+  --color-business-100: #ffffff;
+  --color-business-200: #ff9955;
+  --color-business-500: #ff7a2e;
+
+  /* negativo */
+  --color-danger: #ff453a;
+
+  /* tema branco (design system 02.white: papel claro, tinta preta, laranja) */
+  --paper-base: #f5f5f4;
+  --paper-card: #ffffff;
+  --ink: #0a0a0a;
+  --text-on-paper-secondary: #52525b;
+  --text-on-paper-muted: #8a8a93;
+  --border-on-paper: #d4d4d8;
+  --color-brand-ink: #d44a00;   /* laranja escurecido: texto laranja legível sobre papel */
+  --color-danger-ink: #c62a1f;
+  --color-on-brand: #ffffff;    /* texto sobre marcador laranja */
+  --pad-em: 0.02em 0.22em;      /* respiro do marcador de destaque */
+
+  /* efeitos (valores que os temas trocam: brilho, sombra, barra) */
+  --glow-none: 0%;
+  --glow-light: 10%;
+  --shadow-none: none;
+
+  /* fontes (Google Fonts, como nas landing pages) */
+  --font-display: "Sora", sans-serif;
+  --font-sans:    "Outfit", sans-serif;
+  --font-mono:    "JetBrains Mono", monospace;
+}

@@ -1,0 +1,9 @@
+{
+  "marcas": 103,
+  "modelos": 2037,
+  "amostra_modelos": 60,
+  "media_anos_por_modelo": 4.75,
+  "combinacoes_modelo_ano_estimadas": 9676,
+  "requisicoes_estimadas": 11818,
+  "horas_a_60_rpm": 3.28
+}

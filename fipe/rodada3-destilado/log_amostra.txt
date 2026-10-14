@@ -1,0 +1,73 @@
+Tabela de referência: 338 (outubro/2026)
+[1/1] Royal Enfield: 59 modelos
+    1/59 Bullet 500: 5 anos (rede=9, cache=0)
+    2/59 Classic 350 Chrome: 4 anos (rede=14, cache=0)
+    3/59 Classic 350 Dark: 5 anos (rede=20, cache=0)
+    4/59 Classic 350 Halcyon: 4 anos (rede=25, cache=0)
+    5/59 Classic 350 Heritage: 2 anos (rede=28, cache=0)
+    6/59 Classic 350 Signals: 5 anos (rede=34, cache=0)
+    7/59 Classic 500 EFI: 6 anos (rede=41, cache=0)
+    8/59 Classic 650 Base: 2 anos (rede=44, cache=0)
+    9/59 Classic 650 Mid: 2 anos (rede=47, cache=0)
+    10/59 Classic 650 Top: 2 anos (rede=50, cache=0)
+    11/59 Classic Battle Green 500 EFI: 6 anos (rede=57, cache=0)
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 5s
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 5s
+    12/59 Classic Chrome 500 EFI: 4 anos (rede=64, cache=0)
+    13/59 Classic Desert Storm 500 EFI: 4 anos (rede=69, cache=0)
+    14/59 Classic Gun Metal Grey 500 EFI: 3 anos (rede=73, cache=0)
+    15/59 Classic Pegasus 500 EFI: 2 anos (rede=76, cache=0)
+    16/59 Classic Redditch 500 EFI: 1 anos (rede=78, cache=0)
+    17/59 Classic Squadron Blue 500 EFI: 3 anos (rede=82, cache=0)
+    18/59 Classic Stealth Black 500 EFI: 3 anos (rede=86, cache=0)
+    19/59 Classic Tribute Black 500 EFI: 1 anos (rede=88, cache=0)
+    20/59 Classic/Classic 500 Chrome: 1 anos (rede=90, cache=0)
+    21/59 Continental 535 EFI: 2 anos (rede=93, cache=0)
+    22/59 Continental GT 120 Year Edition 650: 1 anos (rede=95, cache=0)
+    23/59 Continental GT 650: 7 anos (rede=103, cache=0)
+    24/59 Continental GT 650 Custom: 8 anos (rede=112, cache=0)
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 5s
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 10s
+    25/59 Continental GT 650 Special Colorway: 6 anos (rede=121, cache=0)
+    26/59 Goan Classic 350 Base: 2 anos (rede=124, cache=0)
+    27/59 Goan Classic 350 Mid: 2 anos (rede=127, cache=0)
+    28/59 Guerrilla 450 Mid: 2 anos (rede=130, cache=0)
+    29/59 Guerrilla 450 Premium: 2 anos (rede=133, cache=0)
+    30/59 Guerrilla 450 Top: 2 anos (rede=136, cache=0)
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 5s
+    31/59 Himalayan 411 EFI: 7 anos (rede=145, cache=0)
+    32/59 Himalayan 450 Base: 2 anos (rede=148, cache=0)
+    33/59 Himalayan 450 Mid: 3 anos (rede=152, cache=0)
+    34/59 Himalayan 450 Premium: 3 anos (rede=156, cache=0)
+    35/59 Himalayan 450 Top: 3 anos (rede=160, cache=0)
+    36/59 Himalayan Sleet 411 EFI: 1 anos (rede=162, cache=0)
+    37/59 Hunter 350 Dapper: 4 anos (rede=167, cache=0)
+  HTTP 429 em ConsultarAnoModelo; aguardando 5s
+    38/59 Hunter 350 Mid: 2 anos (rede=171, cache=0)
+    39/59 Hunter 350 Premium: 2 anos (rede=174, cache=0)
+    40/59 Hunter 350 Rebel: 2 anos (rede=177, cache=0)
+    41/59 Hunter 350 Top: 2 anos (rede=180, cache=0)
+    42/59 Interceptor 120 Year Edition 650: 1 anos (rede=182, cache=0)
+    43/59 Interceptor 650 Custom: 7 anos (rede=190, cache=0)
+    44/59 Interceptor 650 Special Colorway: 6 anos (rede=197, cache=0)
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 5s
+    45/59 Interceptor 650 Standard: 8 anos (rede=207, cache=0)
+    46/59 Interceptor Bear 650 Custom: 2 anos (rede=210, cache=0)
+    47/59 Interceptor Bear 650 Premium: 2 anos (rede=213, cache=0)
+    48/59 Interceptor Bear 650 Top: 2 anos (rede=216, cache=0)
+    49/59 Meteor 350 Aurora: 3 anos (rede=220, cache=0)
+    50/59 Meteor 350 Fireball: 7 anos (rede=228, cache=0)
+    51/59 Meteor 350 Stellar: 7 anos (rede=236, cache=0)
+    52/59 Meteor 350 Supernova: 6 anos (rede=243, cache=0)
+    53/59 Scram 411 EFI: 3 anos (rede=247, cache=0)
+    54/59 Shotgun 650 Base: 3 anos (rede=251, cache=0)
+    55/59 Shotgun 650 Mid: 3 anos (rede=255, cache=0)
+    56/59 Shotgun 650 Top: 3 anos (rede=259, cache=0)
+    57/59 Super Meteor 650 Astral: 5 anos (rede=265, cache=0)
+  HTTP 429 em ConsultarAnoModelo; aguardando 5s
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 5s
+  HTTP 429 em ConsultarValorComTodosParametros; aguardando 5s
+    58/59 Super Meteor 650 Celestial: 4 anos (rede=273, cache=0)
+    59/59 Super Meteor 650 Interstellar: 4 anos (rede=278, cache=0)
+OK: 206 linhas em amostra_royal_enfield.csv; erros=0
+Requisições: rede=278, cache=0, tempo=322s

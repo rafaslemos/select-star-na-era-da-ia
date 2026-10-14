@@ -1,0 +1,26 @@
+{
+  "desde": null,
+  "ate": null,
+  "duracao_segundos": 592,
+  "chamadas_ao_modelo": 6,
+  "tokens": {
+    "entrada": 12,
+    "cache_1h": 17295,
+    "cache_5m": 0,
+    "cache_leitura": 66591,
+    "saida": 8343,
+    "raciocinio": 593,
+    "saida_estimada": 8343
+  },
+  "custo_usd": 0.166,
+  "modelos": {
+    "claude-sonnet-5-5": 6
+  },
+  "ferramentas": {
+    "Bash": 4,
+    "Write": 1
+  },
+  "chars_resultados_ferramentas": 1151,
+  "primeira_resposta": "2026-10-06T02:04:39.398Z",
+  "ultima_resposta": "2026-10-06T02:14:31.625Z"
+}

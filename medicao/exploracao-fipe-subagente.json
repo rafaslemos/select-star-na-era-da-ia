@@ -1,0 +1,25 @@
+{
+  "desde": "inicio-fipe",
+  "ate": null,
+  "duracao_segundos": 874,
+  "chamadas_ao_modelo": 28,
+  "tokens": {
+    "entrada": 56,
+    "cache_1h": 0,
+    "cache_5m": 111865,
+    "cache_leitura": 2405844,
+    "saida": 933,
+    "raciocinio": 107,
+    "saida_estimada": 14691
+  },
+  "custo_usd": 1.8157,
+  "ferramentas": {
+    "Bash": 22,
+    "Edit": 7,
+    "Write": 4,
+    "SubagentHandback": 1
+  },
+  "chars_resultados_ferramentas": 37494,
+  "primeira_resposta": "2026-10-05T21:01:54.690Z",
+  "ultima_resposta": "2026-10-05T21:16:06.549Z"
+}

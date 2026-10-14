@@ -1,0 +1,26 @@
+{
+  "desde": null,
+  "ate": null,
+  "duracao_segundos": 618,
+  "chamadas_ao_modelo": 5,
+  "tokens": {
+    "entrada": 10,
+    "cache_1h": 17276,
+    "cache_5m": 0,
+    "cache_leitura": 57722,
+    "saida": 10809,
+    "raciocinio": 904,
+    "saida_estimada": 10809
+  },
+  "custo_usd": 0.3775,
+  "modelos": {
+    "claude-opus-5-5": 5
+  },
+  "ferramentas": {
+    "Write": 3,
+    "Bash": 2
+  },
+  "chars_resultados_ferramentas": 1900,
+  "primeira_resposta": "2026-10-06T01:53:31.639Z",
+  "ultima_resposta": "2026-10-06T02:03:49.830Z"
+}

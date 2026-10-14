@@ -1,0 +1,25 @@
+{
+  "desde": "inicio-fipe-conhecimento",
+  "ate": null,
+  "duracao_segundos": 1005,
+  "chamadas_ao_modelo": 18,
+  "tokens": {
+    "entrada": 36,
+    "cache_1h": 0,
+    "cache_5m": 196945,
+    "cache_leitura": 1536919,
+    "saida": 225,
+    "raciocinio": 0,
+    "saida_estimada": 12333
+  },
+  "custo_usd": 1.8463,
+  "ferramentas": {
+    "Bash": 13,
+    "Write": 4,
+    "Edit": 1,
+    "SubagentHandback": 1
+  },
+  "chars_resultados_ferramentas": 8390,
+  "primeira_resposta": "2026-10-06T00:53:09.349Z",
+  "ultima_resposta": "2026-10-06T01:07:30.837Z"
+}
