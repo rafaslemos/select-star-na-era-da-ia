@@ -28,7 +28,7 @@ Deck: `slides/index.html` (o link publicado no Apps Script não vai no repositó
 **Uma semana antes**
 - [ ] Ensaiar com cronômetro pelo menos duas vezes inteiras.
 - [ ] Ensaiar a demo ao vivo (slide 21) na rede de casa e numa rede de celular.
-- [ ] Decidir o link do GitHub do último slide (hoje ele só tem o LinkedIn).
+- [ ] Testar o QR code do último slide com o celular, de longe, na tela do evento.
 - [ ] Os números foram medidos em 5 e 6 de outubro de 2026, com a tabela de outubro/2026. Se alguém consultar a FIPE no dia, os valores podem ter mudado; diga "medido em outubro".
 
 **No dia**
@@ -273,7 +273,9 @@ Cada bloco traz: o que está na tela, o que falar (sugestão, não decore palavr
 ### Encerramento (41:00 – 45:00)
 
 **29. Obrigado · "A IA não substitui quem entende a fonte de dados. Ela multiplica o valor dessa pessoa."**
-- Leia a frase, agradeça, mostre o LinkedIn (/in/orafaslemos) e abra para perguntas.
+- **Tela:** a frase, o GitHub e o LinkedIn, e um QR code para o repositório (github.com/rafaslemos/select-star-na-era-da-ia).
+- **Falar:** leia a frase e agradeça. "Tudo o que vocês viram está no repositório: o deck, os prompts das cinco rodadas, os coletores e o medidor de tokens. É só apontar o celular para o QR code."
+- Deixe este slide na tela durante as perguntas.
 
 ---
 
