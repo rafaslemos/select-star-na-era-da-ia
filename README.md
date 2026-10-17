@@ -74,6 +74,26 @@ python coletor_fipe.py --tipo carro --estimar      # tamanho da coleta de carros
 python coletor_fipe.py --tipo caminhao --marca VOLVO
 ```
 
+Exemplos de execução, com a saída real:
+
+```console
+$ python3 coletor_fipe.py --marca AMAZONAS --csv amazonas.csv --cache cache-amazonas
+Tipo: moto; tabela 338 (outubro/2026); marcas selecionadas: 1
+[1/1] AMAZONAS: 4 modelos
+Linhas: 16; modelos: 4; falhas: 0
+CSV: amazonas.csv
+Requisicoes HTTP: 18; do cache: 5; 429: 0; erros: 0; tempo: 17s
+```
+
+```console
+$ python3 coletor_fipe.py --marca HONDA --csv honda.csv --cache honda
+Tipo: moto; tabela 338 (outubro/2026); marcas selecionadas: 1
+[1/1] HONDA: 187 modelos
+Linhas: 1154; modelos: 187; falhas: 0
+CSV: honda.csv
+Requisicoes HTTP: 618; do cache: 746; 429: 20; erros: 0; tempo: 755s
+```
+
 O coletor faz no máximo 1 requisição por segundo, espera e tenta de novo quando recebe HTTP 429, e nunca grava erros no cache. Antes de uma coleta completa, rode `--estimar`: dependendo do tipo, ela pode levar muitas horas.
 
 Tamanho estimado da coleta completa (tabela de outubro/2026, estimativas de 5 a 14 de outubro de 2026):

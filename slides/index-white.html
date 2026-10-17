@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SELECT * na era da IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!-- build:tokens -->
+<link rel="stylesheet" href="assets/tokens.css">
+<!-- /build:tokens -->
+<style>
+/* ===================================================================
+   Deck engine — palco 1920x1080 escalado para caber na janela.
+   Teclas: → / espaço avança · ← volta · F tela cheia · O visão geral
+           N notas do apresentador · Home/End início/fim
+   =================================================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: #000; overflow: hidden; }
+body { font-family: var(--font-sans); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+
+#viewport { position: fixed; inset: 0; }
+#deck { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center center; }
+
+.slide {
+  position: absolute; inset: 0; padding: 110px 140px 120px;
+  background: var(--surface-base); overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center;
+  opacity: 0; visibility: hidden; transform: translateX(60px);
+  transition: opacity .5s ease, transform .6s cubic-bezier(.2,.8,.2,1), visibility 0s .6s;
+}
+.slide.ativo { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.slide.passado { transform: translateX(-60px); }
+
+/* moldura da marca: quadrado laranja + linha fina, como no logo */
+.slide::before { content: ""; position: absolute; top: 56px; left: 56px; width: 22px; height: 22px; background: var(--color-brand-500); }
+.slide::after  { content: ""; position: absolute; top: 67px; left: 96px; right: 56px; height: 1px; background: var(--border-default); }
+.slide.sem-moldura::before, .slide.sem-moldura::after { display: none; }
+
+.rodape { position: absolute; left: 140px; right: 140px; bottom: 50px; display: flex; justify-content: space-between;
+  font: 500 20px var(--font-mono); color: var(--text-muted); letter-spacing: .04em; }
+.rodape .marca { display: flex; align-items: center; gap: 14px; }
+.rodape img { height: 28px; }
+
+/* ----------------------------------------------------------- tipografia */
+.kicker { font: 600 24px var(--font-mono); color: var(--color-brand-500); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 28px; }
+h1 { font: 800 132px/1.0 var(--font-display); letter-spacing: -.035em; }
+h2 { font: 700 76px/1.08 var(--font-display); letter-spacing: -.025em; margin-bottom: 44px; }
+h3 { font: 600 40px/1.2 var(--font-display); letter-spacing: -.01em; margin-bottom: 16px; }
+p, li { font: 400 36px/1.45 var(--font-sans); color: var(--text-secondary); }
+strong { color: var(--text-primary); font-weight: 600; }
+.laranja { color: var(--color-brand-500); }
+.marcador { background: var(--color-brand-500); color: var(--color-on-brand); padding: var(--pad-em); }
+.mono { font-family: var(--font-mono); }
+.muted { color: var(--text-muted); }
+ul.lista { list-style: none; display: grid; gap: 26px; }
+ul.lista li { padding-left: 48px; position: relative; }
+ul.lista li::before { content: ""; position: absolute; left: 0; top: .58em; width: 18px; height: 18px; background: var(--color-brand-500); }
+
+code, .code { font-family: var(--font-mono); }
+.code { background: var(--surface-card); border: 1px solid var(--border-default); border-left: 6px solid var(--color-brand-500);
+  padding: 36px 44px; font-size: 30px; line-height: 1.55; color: var(--text-primary); white-space: pre; }
+.code .k { color: var(--color-brand-500); font-weight: 600; }
+.code .c { color: var(--text-muted); }
+.code .s { color: var(--color-business-200); }
+.code .t { color: var(--text-muted); font-size: 22px; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 14px; }
+
+/* ----------------------------------------------------------- layout */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.card { background: var(--surface-card); border: 1px solid var(--border-default); padding: 44px; }
+.card .num { font: 800 30px var(--font-mono); color: var(--color-brand-500); margin-bottom: 18px; display: block; }
+.card p { font-size: 30px; }
+
+/* ----------------------------------------------------------- fragmentos */
+.frag { opacity: 0; transform: translateY(24px); transition: opacity .45s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
+.frag.visivel { opacity: 1; transform: none; }
+.frag.esmaecer.visivel.passou { opacity: .28; }
+
+/* ----------------------------------------------------------- capa */
+.capa { background: radial-gradient(1200px 700px at 85% 110%, var(--color-brand-900), transparent 70%), var(--surface-base); }
+.capa h1 { font-size: 168px; }
+.capa h1 .sql { font-family: var(--font-mono); font-weight: 600; color: var(--color-brand-500); letter-spacing: -.02em; }
+.capa .sub { font: 400 46px/1.3 var(--font-sans); color: var(--text-secondary); margin-top: 36px; max-width: 1300px; }
+.capa .autor { margin-top: 90px; display: flex; align-items: center; gap: 40px; }
+.capa .autor img { height: 96px; }
+.capa .autor p { font-size: 30px; line-height: 1.4; }
+.cursor { display: inline-block; width: .5em; height: .9em; background: var(--color-brand-500); vertical-align: -.08em; margin-left: .08em; animation: pisca 1.1s steps(1) infinite; }
+@keyframes pisca { 50% { opacity: 0; } }
+
+/* ----------------------------------------------------------- seção */
+.secao { background: var(--color-brand-500); }
+.secao::before { background: var(--surface-base); }
+.secao::after { background: var(--color-brand-600); }
+.secao .kicker { color: var(--color-brand-100); }
+.secao h1 { color: var(--color-on-brand); font-size: 150px; }
+.secao p { color: var(--color-brand-100); font-size: 44px; margin-top: 30px; max-width: 1400px; }
+.secao .rodape { color: var(--color-brand-100); }
+
+/* ----------------------------------------------------------- número gigante */
+.gigante { font: 800 300px/0.9 var(--font-display); letter-spacing: -.05em; color: var(--color-brand-500); }
+.gigante small { font-size: .3em; letter-spacing: -.01em; color: var(--text-primary); margin-left: 24px; }
+
+/* ----------------------------------------------------------- pergunta */
+.balao { background: var(--surface-card); border: 1px solid var(--border-default); padding: 56px 64px; font: 500 52px/1.35 var(--font-display); max-width: 1500px; position: relative; }
+.balao::before { content: "Pergunta"; position: absolute; top: -18px; left: 56px; background: var(--color-brand-500); color: var(--color-on-brand); font: 600 22px var(--font-mono); padding: 6px 16px; letter-spacing: .1em; text-transform: uppercase; }
+
+/* ----------------------------------------------------------- loop do agente */
+.loop { display: flex; align-items: center; gap: 22px; margin-top: 30px; }
+.loop .no { background: var(--surface-card); border: 1px solid var(--border-default); padding: 30px 30px; min-width: 250px; text-align: center; }
+.loop .no b { display: block; font: 700 34px var(--font-display); color: var(--text-primary); margin-bottom: 8px; }
+.loop .no span { font: 400 24px var(--font-sans); color: var(--text-muted); }
+.loop .no.quente { border-color: var(--color-brand-500); box-shadow: inset 0 0 0 1px var(--color-brand-500); }
+.loop .seta { font: 600 44px var(--font-mono); color: var(--color-brand-500); }
+.volta { margin-top: 34px; font: 500 30px var(--font-mono); color: var(--color-brand-200); border-top: 2px dashed var(--color-brand-700); padding-top: 22px; }
+
+/* ----------------------------------------------------------- tabela SQL x API */
+.tabela { width: 100%; border-collapse: collapse; font-size: 32px; }
+.tabela th { text-align: left; font: 600 24px var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: .1em; padding: 0 24px 22px; border-bottom: 2px solid var(--color-brand-500); }
+.tabela td { padding: 24px; border-bottom: 1px solid var(--border-default); color: var(--text-secondary); vertical-align: top; }
+.tabela td:first-child { font-family: var(--font-mono); color: var(--color-brand-500); font-weight: 600; white-space: nowrap; }
+.tabela td:nth-child(2) { font-family: var(--font-mono); color: var(--text-primary); }
+
+/* ----------------------------------------------------------- barras */
+.barras { display: grid; gap: 40px; margin-top: 10px; }
+.barra { display: grid; grid-template-columns: 420px 1fr 300px; align-items: center; gap: 30px; }
+.barra .rot { font: 600 34px var(--font-display); }
+.barra .rot span { display: block; font: 400 24px var(--font-sans); color: var(--text-muted); margin-top: 4px; }
+.barra .trilho { height: 64px; background: var(--surface-card); border: 1px solid var(--border-default); position: relative; }
+.barra .enchimento { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--color-brand-500); transition: width 1.6s cubic-bezier(.2,.8,.2,1); min-width: 3px; }
+.barra.r2 .enchimento { background: var(--color-business-500); }
+.barra.r3 .enchimento { background: var(--color-business-200); }
+.barra.r4 .enchimento { background: var(--color-brand-200); }
+.barra.r5 .enchimento { background: var(--color-business-100); }
+.barras.cinco { gap: 26px; }
+.barras.cinco .barra .trilho { height: 52px; }
+.barras.cinco .barra .valor { font-size: 40px; }
+.barra.destaque .rot, .barra.destaque .valor { color: var(--color-brand-500); }
+
+/* ----------------------------------------------------------- barras empilhadas */
+.pilhas { display: grid; gap: 44px; margin-top: 10px; }
+.pilha { display: grid; grid-template-columns: 400px 1fr 230px; align-items: center; gap: 30px; }
+.pilha .rot { font: 600 34px var(--font-display); }
+.pilha .rot span { display: block; font: 400 24px var(--font-sans); color: var(--text-muted); margin-top: 4px; }
+.pilha .trilho { height: 92px; display: flex; background: var(--surface-card); border: 1px solid var(--border-default); }
+.pilha .valor { font: 700 46px var(--font-mono); text-align: right; }
+.seg { width: 0; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap;
+  font: 600 26px var(--font-mono); color: var(--color-brand-100); transition: width 1.4s cubic-bezier(.2,.8,.2,1); }
+.seg.reler { background: var(--color-brand-500); }
+.seg.guardar { background: var(--color-brand-700); }
+.seg.escrever { background: var(--text-primary); color: var(--ink); }
+.legenda { display: flex; gap: 48px; margin-top: 40px; font: 500 26px var(--font-sans); color: var(--text-secondary); }
+.formula { display: inline-block; font: 600 34px var(--font-mono); color: var(--text-primary); background: var(--surface-card);
+  border: 1px solid var(--border-default); border-left: 6px solid var(--color-brand-500); padding: 14px 28px; margin: -14px 0 36px; }
+.formula b { color: var(--color-brand-500); font-weight: 600; }
+.tabela.prosa td:nth-child(2) { font-family: var(--font-sans); color: var(--text-primary); }
+.tabela.prosa td { font-size: 29px; padding: 18px 24px; }
+.tabela.qtd th:not(:first-child), .tabela.qtd td:not(:first-child) { text-align: right; font-family: var(--font-mono); color: var(--text-primary); }
+.tabela.qtd td:first-child { font-family: var(--font-display); color: var(--text-primary); }
+.tabela.qtd td { font-size: 36px; padding: 22px 24px; }
+.tabela.qtd tr.destaque td { color: var(--color-brand-500); font-weight: 700; }
+.legenda i { display: inline-block; width: 22px; height: 22px; margin-right: 12px; vertical-align: -3px; }
+.barra .valor { font: 700 46px var(--font-mono); text-align: right; }
+.barra .valor small { display: block; font: 400 22px var(--font-sans); color: var(--text-muted); }
+
+/* ----------------------------------------------------------- terminal da demo */
+.term { background: #050505; border: 1px solid var(--border-default); font: 400 26px/1.6 var(--font-mono); padding: 34px 40px; color: var(--text-secondary); }
+.term > div { white-space: pre; }
+.term .ok { color: var(--color-business-200); }
+.term .erro { color: var(--color-danger); }
+.term .p { color: var(--color-brand-500); }
+
+/* ----------------------------------------------------------- fechamento */
+.frase { font: 700 92px/1.12 var(--font-display); letter-spacing: -.025em; max-width: 1600px; }
+.contato { display: flex; gap: 70px; margin-top: 80px; font: 500 32px var(--font-mono); color: var(--text-secondary); }
+.contato a { color: inherit; text-decoration: none; }
+.fechamento { display: grid; grid-template-columns: 1fr auto; gap: 80px; align-items: center; }
+.qrs { display: flex; gap: 32px; }
+.qr-card { display: flex; flex-direction: column; align-items: center; gap: 18px; background: #fff; padding: 26px 26px 22px; text-decoration: none; }
+.qr-card .qr { width: 300px; height: 300px; display: block; }
+.qr-card span { font: 700 28px var(--font-display); color: var(--ink); text-align: center; }
+.qr-card small { display: block; font: 400 21px var(--font-sans); color: var(--text-on-paper-secondary); margin-top: 4px; }
+.contato a:hover { color: var(--text-primary); }
+.contato b { color: var(--color-brand-500); font-weight: 600; margin-right: 12px; }
+
+/* ===================================================================
+   Interface do apresentador
+   =================================================================== */
+#progresso { position: fixed; left: 0; bottom: 0; height: 5px; background: var(--color-brand-500); transition: width .4s ease; z-index: 10; }
+#contador { position: fixed; right: 22px; top: 16px; font: 500 15px var(--font-mono); color: var(--text-muted); z-index: 21; display: none; }
+body.com-notas #contador { display: block; }
+#notas { position: fixed; left: 0; right: 0; bottom: 0; max-height: 38vh; overflow: auto; z-index: 20;
+  background: rgba(10,10,10,.96); border-top: 3px solid var(--color-brand-500); padding: 22px 32px 30px;
+  font: 400 19px/1.55 var(--font-sans); color: var(--text-primary); transform: translateY(105%); transition: transform .3s ease; }
+#notas.aberto { transform: none; }
+#notas h4 { font: 600 14px var(--font-mono); color: var(--color-brand-500); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; }
+#notas p, #notas li { font-size: 19px; color: var(--text-primary); }
+#notas ul { padding-left: 22px; }
+aside.notas { display: none; }
+
+body.visao #viewport { display: block; overflow: auto; padding: 40px; }
+body.visao #deck { position: static; transform: none !important; width: auto; height: auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+body.visao .slide { position: relative; inset: auto; opacity: 1; visibility: visible; transform: none; aspect-ratio: 16/9;
+  width: 100%; height: auto; cursor: pointer; zoom: .2; outline: 6px solid transparent; transition: outline-color .2s; }
+body.visao .slide:hover { outline-color: var(--color-brand-700); }
+body.visao .slide.ativo { outline-color: var(--color-brand-500); }
+body.visao .frag { opacity: 1; transform: none; }
+body.visao #progresso, body.visao #contador { display: none; }
+
+#ajuda { position: fixed; top: 18px; right: 22px; z-index: 30; font: 500 14px var(--font-mono); color: var(--text-muted);
+  background: rgba(17,17,17,.9); border: 1px solid var(--border-default); padding: 10px 14px; line-height: 1.7; transition: opacity .6s; }
+#ajuda.sumiu { opacity: 0; pointer-events: none; }
+</style>
+
+<style>
+/* ===================================================================
+   TEMA WHITE — papel claro, tinta preta, laranja da marca.
+   Reaproveita os tokens 02.white de tokens.css e corrige os poucos
+   pontos com cor fixa ou invertida. Para manter: só o CONTEÚDO abaixo
+   deste bloco é espelho de index.html; o tema vive aqui.
+   =================================================================== */
+:root {
+  --surface-base:   var(--paper-base);
+  --surface-card:   var(--paper-card);
+  --border-default: var(--border-on-paper);
+  --text-primary:   var(--ink);
+  --text-secondary: var(--text-on-paper-secondary);
+  --text-muted:     var(--text-on-paper-muted);
+  --color-danger:   var(--color-danger-ink);
+}
+html, body { background: var(--paper-base); }
+
+/* laranja pequeno/médio precisa escurecer para ler sobre papel */
+.kicker, .laranja, .card .num, .code .k,
+.tabela td:first-child, .contato b, .formula b,
+.tabela.qtd tr.destaque td,
+.barra.destaque .rot, .barra.destaque .valor { color: var(--color-brand-ink); }
+
+/* capa: brilho laranja suave no lugar do vinho escuro do tema dark */
+.capa { background: radial-gradient(1200px 700px at 85% 110%, rgba(255,91,0,.14), transparent 70%), var(--surface-base); }
+
+/* loop do agente */
+.volta { color: var(--color-brand-ink); border-top-color: var(--color-brand-200); }
+
+/* blocos de código: string em verde (legível no papel); resto herda */
+.code .s { color: #15803d; }
+
+/* terminal claro: card branco, texto escuro */
+.term { background: var(--surface-card); color: var(--text-secondary); }
+.term .ok  { color: #15803d; }
+.term .erro{ color: var(--color-danger-ink); }
+.term .p   { color: var(--color-brand-ink); }
+
+/* barras: tons que aparecem sobre papel (os claros do dark sumiriam) */
+.barra.r4 .enchimento { background: #ffa060; }
+.barra.r5 .enchimento { background: var(--color-brand-500); }
+
+/* segmento "escrever": era branco c/ texto preto → preto c/ texto branco */
+.seg.escrever { background: var(--ink); color: var(--paper-card); }
+
+/* QR card branco ganha contorno para separar do papel */
+.qr-card { box-shadow: 0 0 0 1px var(--border-on-paper); }
+
+/* interface do apresentador em claro */
+#notas { background: rgba(255,255,255,.97); border-top-color: var(--color-brand-500); color: var(--ink); }
+#ajuda { background: rgba(255,255,255,.92); }
+</style>
+</head>
+<body class="white">
+<div id="viewport"><div id="deck">
+
+<!-- ============================================================ 1. CAPA -->
+<section class="slide capa" data-titulo="Capa">
+  <div class="kicker">SQL Saturday Florianópolis · 2026</div>
+  <h1><span class="sql">SELECT *</span><br>na era da IA<span class="cursor"></span></h1>
+  <p class="sub">Como conhecer a API economiza tokens <span class="laranja">(e dinheiro)</span></p>
+  <div class="autor">
+    <img src="assets/logo-chora-api-dark.png" alt="Chora API Revolution">
+    <p><strong>Rafael Lemos</strong><br>Chora API Revolution</p>
+  </div>
+  <aside class="notas">
+    <h4>0:00 · Abertura (1 min)</h4>
+    <p>Apresente-se rápido. Pergunte: "quem aqui já levou bronca por um SELECT * em produção?". Mãos levantadas = gancho pronto.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 2. GANCHO -->
+<section class="slide" data-titulo="A pergunta">
+  <div class="kicker">Uma pergunta simples</div>
+  <div class="balao">Quanto vale, na <span class="laranja">Tabela FIPE</span>, cada moto da <span class="laranja">Royal Enfield</span>?</div>
+  <p class="frag" style="margin-top:70px">A resposta: <strong>206 linhas</strong>. 59 modelos, cada um com seus anos.</p>
+  <p class="frag">O site da FIPE não tem API documentada. Vamos pedir para a IA <strong>descobrir sozinha</strong>.</p>
+  <aside class="notas">
+    <h4>1:00 · Gancho (4 min)</h4>
+    <p>Todo mundo aqui já consultou a FIPE no navegador. Pergunte: "alguém sabe como o site busca esses dados?". Ninguém sabe, e a IA também não sabia.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 3. O QUE A IA FEZ -->
+<section class="slide" data-titulo="No escuro">
+  <div class="kicker">Rodada 1 · só o link do site</div>
+  <h2>No escuro, a IA investiga<br>por tentativa e erro.</h2>
+  <div class="term">
+<div class="frag"><span class="p">→</span> baixa o HTML e o JavaScript do site     <span class="ok">← acha /api/veiculos/...</span></div>
+<div class="frag"><span class="p">→</span> GET ConsultarTabelaDeReferencia          <span class="erro">← 404 (só aceita POST)</span></div>
+<div class="frag"><span class="p">→</span> POST ConsultarMarcas, sem parâmetros       <span class="erro">← HTTP 200 "Parâmetros inválidos"</span></div>
+<div class="frag"><span class="p">→</span> POST ConsultarModelos, sem tipo de veículo  <span class="erro">← "nadaencontrado" (assumiu carro)</span></div>
+<div class="frag"><span class="p">→</span> 1,7 requisição por segundo                 <span class="erro">← 429 do Cloudflare</span></div>
+  </div>
+  <aside class="notas">
+    <h4>Leia em voz alta, linha a linha</h4>
+    <ul><li>Achou os endpoints lendo o JavaScript do site: 2 downloads, nenhum palpite.</li>
+    <li>GET dá 404: quem testa só no navegador conclui que o endpoint não existe.</li>
+    <li>Erro com HTTP 200: o status não avisa que deu errado.</li>
+    <li>Sem o tipo de veículo, a API assume carro e responde "nada encontrado". Armadilha silenciosa.</li>
+    <li>O Cloudflare bloqueia mesmo abaixo de 2 req/s. Isso não está em lugar nenhum; só rodando para saber.</li></ul>
+  </aside>
+</section>
+
+<!-- ============================================================ 4. NÚMERO GIGANTE -->
+<section class="slide" data-titulo="O tamanho do estrago">
+  <div class="kicker">Quanto custou a IA descobrir a API</div>
+  <div class="gigante" style="font-size:230px"><span data-contar="2532456">0</span><small>tokens</small></div>
+  <p style="margin-top:50px;max-width:1500px">para aprender a buscar <span class="marcador">206 linhas</span>.</p>
+  <p class="frag muted" style="font-size:30px;margin-top:40px">14 min 34 s · 28 chamadas ao modelo · ~US$ 1,82 · ~510 requisições ao site da FIPE</p>
+  <aside class="notas">
+    <h4>Pausa dramática</h4>
+    <p>Medido de verdade: subagente do Claude Code (Opus 5.5) com contexto limpo, somando o usage do transcript. Custo estimado nos preços do Opus 5.5; a saída é estimada pelo texto gerado.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 5. SEÇÃO -->
+<section class="slide secao" data-titulo="Como a IA consulta">
+  <div class="kicker">Parte 1</div>
+  <h1>Como a IA conversa<br>com uma API</h1>
+  <p>Tool calling, MCP e o loop que transforma cada resposta em conta para pagar.</p>
+</section>
+
+<!-- ============================================================ 6. LOOP -->
+<section class="slide" data-titulo="O loop do agente">
+  <div class="kicker">Tool calling em um slide</div>
+  <h2>Cada volta do loop reenvia tudo.</h2>
+  <div class="loop">
+    <div class="no frag"><b>Pergunta</b><span>usuário</span></div><div class="seta frag">→</div>
+    <div class="no frag"><b>Modelo</b><span>decide a ferramenta</span></div><div class="seta frag">→</div>
+    <div class="no frag"><b>Ferramenta</b><span>chama a API</span></div><div class="seta frag">→</div>
+    <div class="no quente frag"><b>Resposta</b><span>vira token de entrada</span></div>
+  </div>
+  <div class="volta frag">↺ volta para o modelo com: instruções + ferramentas + histórico + resposta nova</div>
+  <aside class="notas">
+    <h4>7:00 · Mecânica (5 min)</h4>
+    <p>A API do modelo é sem estado: cada turno manda a conversa inteira de novo. O que entrou no turno 2 é pago de novo nos turnos 3, 4, 5…</p>
+    <p>MCP é só um jeito padronizado de expor essas ferramentas. O custo mora no que entra no contexto.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 7. ONDE VÃO OS TOKENS -->
+<section class="slide" data-titulo="Onde vão os tokens">
+  <div class="kicker">A conta do contexto · Rodada 1</div>
+  <h2>Onde os tokens foram gastos</h2>
+  <div class="grid-2">
+    <ul class="lista">
+      <li class="frag"><strong>Antes da primeira pergunta</strong>: instruções e ferramentas do agente.</li>
+      <li class="frag"><strong>Cada descoberta</strong> fica no histórico: HTML, JavaScript, respostas, erros.</li>
+      <li class="frag"><strong>O histórico é relido</strong> a cada volta do loop.</li>
+      <li class="frag"><strong>Tentativa e erro</strong>: cada parâmetro errado custa uma volta inteira.</li>
+    </ul>
+    <div class="code frag"><span class="t">Contexto do subagente</span><span class="k">1º turno</span>       61.503 tokens  <span class="c">← nada da FIPE ainda</span>
+<span class="k">último turno</span>  111.867 tokens
+
+<span class="k">28 voltas</span>      2.405.844 tokens
+               <span class="c">relidos do cache</span>
+
+<span class="k">saída</span>          ~14.700 tokens
+               <span class="c">← menos de 1% do total</span></div>
+  </div>
+  <aside class="notas">
+    <p>O que a IA escreve é barato. O caro é reler o contexto a cada volta: 95% do total é leitura de cache.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 8. SEÇÃO -->
+<section class="slide secao" data-titulo="Você já conhece">
+  <div class="kicker">Parte 2</div>
+  <h1>Você já viu<br>esse filme.</h1>
+  <p>Tudo o que a gente aprendeu otimizando query vale para a IA consumindo API.</p>
+</section>
+
+<!-- ============================================================ 9. TABELA SQL x API -->
+<section class="slide" data-titulo="SQL x API">
+  <div class="kicker">Tradução simultânea</div>
+  <h2>De SQL para API, de API para IA</h2>
+  <table class="tabela">
+    <thead><tr><th>No banco</th><th>Na API</th><th>Para a IA</th></tr></thead>
+    <tbody>
+      <tr class="frag"><td>SELECT *</td><td>sem seleção de campos</td><td>resposta gigante no contexto</td></tr>
+      <tr class="frag"><td>WHERE</td><td>parâmetros da requisição</td><td>filtrar na fonte, não no prompt</td></tr>
+      <tr class="frag"><td>JOIN</td><td>uma chamada por nível</td><td>o loop fica no código, não no modelo</td></tr>
+      <tr class="frag"><td>Estatísticas</td><td>documentação e limites</td><td>conhecimento estruturado no prompt</td></tr>
+      <tr class="frag"><td>Plano de execução</td><td>log de chamadas</td><td>usage: tokens de entrada e saída</td></tr>
+    </tbody>
+  </table>
+  <aside class="notas">
+    <h4>13:00 · O coração da palestra (7 min)</h4>
+    <p>O otimizador de banco usa estatísticas para escolher o plano. A IA sem conhecimento da API é um otimizador sem estatísticas: descobre o custo executando.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 10. CÓDIGO LADO A LADO -->
+<section class="slide" data-titulo="A mesma consulta">
+  <div class="kicker">A mesma consulta, dois dialetos</div>
+  <div class="grid-2">
+    <div class="code"><span class="t">SQL</span><span class="k">SELECT</span> mo.nome, a.ano, v.valor
+<span class="k">FROM</span>   marcas ma
+<span class="k">JOIN</span>   modelos mo <span class="k">ON</span> …
+<span class="k">JOIN</span>   anos    a  <span class="k">ON</span> …
+<span class="k">JOIN</span>   valores v  <span class="k">ON</span> …
+<span class="k">WHERE</span>  ma.nome = <span class="s">'Royal Enfield'</span>
+  <span class="k">AND</span>  v.tabela = <span class="s">338</span>;
+
+<span class="c">-- 1 consulta</span></div>
+    <div class="code frag"><span class="t">API da FIPE</span><span class="k">POST</span> ConsultarTabelaDeReferencia  <span class="c">×1</span>
+<span class="k">POST</span> ConsultarMarcas              <span class="c">×1</span>
+<span class="k">POST</span> ConsultarModelos             <span class="c">×1</span>
+<span class="k">POST</span> ConsultarAnoModelo           <span class="c">×59</span>
+<span class="k">POST</span> ConsultarValorComTodos…     <span class="c">×206</span>
+
+<span class="c">-- 268 requisições, 1 por segundo.</span>
+<span class="c">-- O JOIN virou um loop aninhado.</span></div>
+  </div>
+  <aside class="notas">
+    <p>Cada nível é uma chamada. Para todas as motos: 103 marcas, 2.037 modelos, ~9.700 preços e ~11.800 requisições. Se o modelo fizer esse loop, cada resposta passa pelo contexto.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 11. ARMADILHAS -->
+<section class="slide" data-titulo="As armadilhas">
+  <div class="kicker">Conhecer a API é saber isso antes</div>
+  <h2>A API da FIPE não avisa quando você erra.</h2>
+  <ul class="lista">
+    <li class="frag">Erro vem com <strong>HTTP 200</strong> e o motivo no corpo.</li>
+    <li class="frag">Sem o tipo de veículo, ela <strong>assume carro</strong> e responde "nada encontrado".</li>
+    <li class="frag"><span class="mono laranja">tipoConsulta=tradicional</span> é obrigatório, e não aparece em lugar óbvio.</li>
+    <li class="frag">O Cloudflare bloqueia (<strong>429</strong>) abaixo de 2 requisições por segundo.</li>
+  </ul>
+  <aside class="notas">
+    <p>Cada uma dessas armadilhas custou pelo menos uma volta do loop na Rodada 1. Quem conhece a API sabe disso antes de começar.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 12. SEÇÃO EXPERIMENTO -->
+<section class="slide secao" data-titulo="O experimento">
+  <div class="kicker">Parte 3 · O experimento</div>
+  <h1>Mesma tarefa.<br>Três prompts.</h1>
+  <p>Mapear a API da FIPE e coletar as 206 motos da Royal Enfield. Três subagentes com contexto limpo; muda só o que vai no prompt.</p>
+  <aside class="notas">
+    <h4>20:00 · Experimento (15 min)</h4>
+    <p>Medição: medicao/medir_sessao.py soma o usage do transcript de cada subagente desde um marco. Detalhes em medicao/EXPERIMENTOS.md.</p>
+    <p>Ao vivo: rodar o coletor numa marca pequena (AMAZONAS, ~20 requisições) para mostrar a coleta acontecendo com zero token.</p>
+    <p class="mono">python coletor_fipe.py --marca AMAZONAS --saida amazonas.csv</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 13. AS 3 RODADAS -->
+<section class="slide" data-titulo="As três rodadas">
+  <div class="kicker">O que cada subagente recebeu</div>
+  <div class="grid-3">
+    <div class="card frag"><span class="num">01</span><h3>Explorar</h3><p>Só o link do site. A IA descobre tudo sozinha.</p></div>
+    <div class="card frag"><span class="num">02</span><h3>Conhecimento copiado</h3><p>Os 6 <span class="mono">curl</span> copiados do navegador, com cabeçalhos, cookies e a lista de 310 meses.</p></div>
+    <div class="card frag"><span class="num">03</span><h3>Conhecimento estruturado</h3><p>O mesmo conhecimento em 5 passos: endpoint, corpo e o que extrair.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================ 14. BRUTO x DESTILADO -->
+<section class="slide" data-titulo="Copiado x estruturado">
+  <div class="kicker">O mesmo conhecimento, dois formatos</div>
+  <div class="grid-2">
+    <div class="code" style="font-size:22px"><span class="t">Rodada 2 · copiado · 31.950 caracteres</span>curl --url '…/ConsultarMarcas' \
+  -H 'accept: application/json, text/…' \
+  -H 'accept-language: pt-BR,pt;q=0.9,…' \
+  -H 'content-type: application/x-www-…' \
+  -b 'ROUTEID=…; _ga=…;
+      cf_clearance=…' \
+  -H 'origin: https://veiculos.fipe…' \
+  -H 'sec-ch-ua: "Google Chrome";v=…' \
+  -H 'user-agent: Mozilla/5.0 (Wind…' \
+  --data-raw 'codigoTabelaReferencia=338…'
+<span class="c">… × 6 chamadas, + 310 meses de exemplo</span></div>
+    <div class="code frag" style="font-size:22px"><span class="t">Rodada 3 · estruturado · 9.179 caracteres</span><span class="k">2. Consultar Marcas</span>
+Endpoint: POST …/ConsultarMarcas
+Body: codigoTabelaReferencia=338
+      &amp;codigoTipoVeiculo=2
+(1 = Carros, 2 = Motos, 3 = Caminhões)
+Retorno: extraia o Value da marca.
+         Será o codigoMarca.
+
+<span class="c">… 5 passos, sem cookies nem listas</span></div>
+  </div>
+  <aside class="notas">
+    <p>Os cookies nem eram necessários: as três rodadas confirmaram que a API responde sem eles. É ruído que entra no contexto e é relido em cada volta.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 15. PLACAR -->
+<section class="slide" data-titulo="Placar" data-placar>
+  <div class="kicker">Placar · tokens processados pelo subagente</div>
+  <h2>Mesmo resultado, contas diferentes</h2>
+  <div class="barras">
+    <div class="barra r1"><div class="rot">1. Explorar<span>14 min 34 s · 28 chamadas</span></div><div class="trilho"><div class="enchimento" data-valor="2532456"></div></div><div class="valor">US$ 1,82<small>2,53 mi tokens</small></div></div>
+    <div class="barra r2"><div class="rot">2. Copiado<span>16 min 45 s · 18 chamadas</span></div><div class="trilho"><div class="enchimento" data-valor="1746233"></div></div><div class="valor">US$ 1,85<small>1,75 mi tokens</small></div></div>
+    <div class="barra r3"><div class="rot">3. Estruturado<span>12 min 36 s · 19 chamadas</span></div><div class="trilho"><div class="enchimento" data-valor="1561030"></div></div><div class="valor">US$ 1,26<small>1,56 mi tokens</small></div></div>
+  </div>
+  <p class="frag" style="margin-top:56px">Nas três: <strong>206 linhas, os mesmos 206 valores</strong>. O conhecimento estruturado saiu <span class="marcador">31% mais barato</span> que explorar.</p>
+  <aside class="notas">
+    <h4>Como foi medido</h4>
+    <p>Subagentes do Claude Code (Opus 5.5) com contexto limpo. Tokens somados do usage do transcript; custo nos preços do Opus 5.5 (entrada e cache exatos, saída estimada pelo texto gerado). O tempo é dominado pela taxa de requisições à FIPE, não pela IA.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 16. CONHECIMENTO OCUPA CONTEXTO -->
+<section class="slide" data-titulo="Conhecimento ocupa contexto">
+  <div class="kicker">A surpresa do experimento</div>
+  <h2>Conhecimento copiado custou o mesmo que não saber nada.</h2>
+  <ul class="lista">
+    <li class="frag">Copiado e estruturado fizeram o mesmo trabalho: <strong>18 e 19 chamadas</strong> ao modelo, contra 28 explorando.</li>
+    <li class="frag">A diferença de custo é o peso do prompt: <strong>~15 mil tokens</strong> de cabeçalhos e listas, relidos em cada volta.</li>
+    <li class="frag">Conhecer a API corta o trabalho. <span class="marcador">Estruturar o conhecimento</span> corta a conta.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ 17. LACUNAS -->
+<section class="slide" data-titulo="As lacunas">
+  <div class="kicker">O que o especialista não escreveu</div>
+  <h2>Cada lacuna vira tentativa e erro.<br>E tentativa e erro vira token.</h2>
+  <p>O conhecimento estruturado não citava:</p>
+  <ul class="lista" style="margin-top:24px">
+    <li class="frag">o bloqueio do Cloudflare (<strong>HTTP 429</strong>);</li>
+    <li class="frag">os erros que chegam com <strong>HTTP 200</strong>;</li>
+    <li class="frag">os combustíveis <strong>4, 5 e 6</strong> (elétrico, flex e híbrido).</li>
+  </ul>
+  <p class="frag" style="margin-top:36px">O 429 e o erro com HTTP 200 foram redescobertos <strong>nas três rodadas</strong>.</p>
+  <aside class="notas">
+    <p>Combustível: as três rodadas leem o código que vem no ano ("2020-1") e acertam o valor. Mas só a Rodada 2 documentou os códigos 4, 5 e 6; a Rodada 1 nunca topou com eles, e a Rodada 3 achou que eram só de carros (existe moto flex, como a Honda CG 160). Conhecimento que falta não quebra o dado: deixa a documentação incompleta.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 17a. RODADA 4 -->
+<section class="slide" data-titulo="Rodada 4">
+  <div class="kicker">Rodada 4 · o mesmo conhecimento, num agente enxuto</div>
+  <h2>O que fizemos para cortar a conta</h2>
+  <div class="grid-2" style="grid-template-columns:1.25fr 1fr">
+    <ul class="lista" style="gap:22px">
+      <li class="frag" style="font-size:31px"><strong>Agente enxuto</strong>: só Bash, Read e Write, sem servidores MCP. Contexto inicial de <span class="laranja">61,5 mil para 8,2 mil tokens</span>.</li>
+      <li class="frag" style="font-size:31px"><strong>Menos voltas</strong>: coletor escrito de uma vez, amostra rodada numa única chamada. De <span class="laranja">19 para 5 chamadas</span>.</li>
+      <li class="frag" style="font-size:31px"><strong>Lacunas fechadas</strong>: as 6 armadilhas e o formato do CSV no prompt. Nada redescoberto.</li>
+      <li class="frag" style="font-size:31px"><strong>Modelo certo para a tarefa</strong>: com o conhecimento pronto, executar não exige o modelo mais forte.</li>
+    </ul>
+    <div style="display:grid;gap:28px">
+      <div class="card frag"><span class="num">4a · Opus 5.5</span><div style="font:700 72px var(--font-mono);color:var(--text-primary)">US$ 0,38</div><p>5 chamadas · 85,8 mil tokens · 10 min</p></div>
+      <div class="card frag" style="border-color:var(--color-brand-500)"><span class="num">4b · Sonnet 5.5</span><div style="font:700 72px var(--font-mono);color:var(--color-brand-500)">US$ 0,17</div><p>6 chamadas · 92,2 mil tokens · 10 min</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <h4>Rodada 4 · como rodou</h4>
+    <p>Cada variação foi um processo separado do Claude Code (claude -p), com contexto limpo: só três ferramentas, nenhum servidor MCP e um prompt de sistema curto pedindo para escrever arquivos de uma vez e rodar comandos demorados numa única chamada. Script: medicao/rodar_enxuto.sh.</p>
+    <p>Nas duas, o CSV saiu no formato pedido, com os mesmos 206 valores. O tempo (~10 min) é quase todo espera pelo limite de 60 requisições por minuto.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 17a2. POR QUE CAIU TANTO -->
+<section class="slide" data-titulo="Por que caiu tanto">
+  <div class="kicker">Rodada 3 x Rodada 4a · mesmo modelo (Opus 5.5)</div>
+  <h2 style="margin-bottom:34px;font-size:62px">O trabalho útil custou o mesmo. O desperdício sumiu.</h2>
+  <div class="formula">custo ≈ <b>contexto</b> × <b>voltas</b> + o que a IA escreve</div>
+  <div class="pilhas">
+    <div class="pilha">
+      <div class="rot">3. Estruturado<span>19 voltas · contexto de 63 a 94 mil tokens</span></div>
+      <div class="trilho">
+        <div class="seg reler" data-largura="46.0">US$ 0,58</div>
+        <div class="seg guardar" data-largura="37.4">US$ 0,47</div>
+        <div class="seg escrever" data-largura="16.6">US$ 0,21</div>
+      </div>
+      <div class="valor">US$ 1,26</div>
+    </div>
+    <div class="pilha">
+      <div class="rot">4a. Enxuto<span>5 voltas · contexto de 8 a 20 mil tokens</span></div>
+      <div class="trilho">
+        <div class="seg reler" data-largura="1.8"></div>
+        <div class="seg guardar" data-largura="11.0">0,14</div>
+        <div class="seg escrever" data-largura="17.1">US$ 0,22</div>
+      </div>
+      <div class="valor">US$ 0,38</div>
+    </div>
+  </div>
+  <div class="legenda">
+    <span><i style="background:var(--color-brand-500)"></i>Reler o contexto a cada volta</span>
+    <span><i style="background:var(--color-brand-700)"></i>Guardar contexto novo no cache</span>
+    <span><i style="background:var(--text-primary)"></i>Escrever código e documentação</span>
+  </div>
+  <p class="frag" style="margin-top:44px">Reler: <strong>US$ 0,58 → US$ 0,02</strong>. Contexto ~7× menor, relido ~4× menos: <span class="marcador">25× menos releitura</span>.</p>
+  <aside class="notas">
+    <h4>A conta do agente</h4>
+    <p>Custo ≈ tamanho do contexto × número de voltas, mais o que a IA escreve. A cada volta o modelo relê tudo: instruções, ferramentas, pedido e histórico.</p>
+    <ul>
+      <li>Rodada 3: caderno de 63 a 94 mil tokens relido 19 vezes = 1,46 milhão de tokens relidos.</li>
+      <li>Rodada 4a: caderno de 8 a 20 mil tokens relido 5 vezes = 58 mil tokens relidos.</li>
+      <li>Escrever (o coletor e a documentação) custou ~US$ 0,21 nas duas: a IA fez o mesmo trabalho.</li>
+    </ul>
+    <p>O contexto encolheu porque o subagente padrão carrega a definição de todas as ferramentas da sessão (navegador, Figma, Gmail…): ~55 mil tokens antes de qualquer pergunta. O enxuto só tem Bash, Read e Write.</p>
+    <p>Preços do Opus 5.5: releitura US$ 0,40/milhão, escrita de cache US$ 5 (5 min) ou US$ 8 (1 h) por milhão, saída US$ 20/milhão. A saída da Rodada 3 é estimada pelo texto gerado.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 17b. PLACAR FINAL -->
+<section class="slide" data-titulo="Placar final" data-placar>
+  <div class="kicker">Placar final · custo por rodada</div>
+  <h2>Mesmos 206 valores, cinco contas</h2>
+  <div class="barras cinco">
+    <div class="barra r1"><div class="rot">1. Explorar<span>28 chamadas · 2,53 mi tokens</span></div><div class="trilho"><div class="enchimento" data-valor="182"></div></div><div class="valor">US$ 1,82</div></div>
+    <div class="barra r2"><div class="rot">2. Copiado<span>18 chamadas · 1,75 mi tokens</span></div><div class="trilho"><div class="enchimento" data-valor="185"></div></div><div class="valor">US$ 1,85</div></div>
+    <div class="barra r3"><div class="rot">3. Estruturado<span>19 chamadas · 1,56 mi tokens</span></div><div class="trilho"><div class="enchimento" data-valor="126"></div></div><div class="valor">US$ 1,26</div></div>
+    <div class="barra r4"><div class="rot">4a. Enxuto Opus<span>5 chamadas · 86 mil tokens</span></div><div class="trilho"><div class="enchimento" data-valor="38"></div></div><div class="valor">US$ 0,38</div></div>
+    <div class="barra r5 destaque"><div class="rot">4b. Enxuto Sonnet<span>6 chamadas · 92 mil tokens</span></div><div class="trilho"><div class="enchimento" data-valor="17"></div></div><div class="valor">US$ 0,17</div></div>
+  </div>
+  <p class="frag" style="margin-top:44px">De explorar no escuro ao agente enxuto: <span class="marcador">91% mais barato</span>, com o mesmo resultado.</p>
+  <aside class="notas">
+    <p>Do 3 para o 4a, com o mesmo modelo: −70%, com três mudanças juntas (contexto menor, menos voltas e conhecimento completo, com armadilhas e formato do CSV). Uma rodada só não separa quanto veio de cada uma. Do 4a para o 4b: −56% pela troca de modelo, com todo o resto idêntico.</p>
+    <p>Custos estimados pelo usage dos transcripts, nos preços de cada modelo. Nas rodadas 4a e 4b, bateram com o total_cost_usd do próprio Claude Code.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 18. COLETA -->
+<section class="slide" data-titulo="A coleta">
+  <div class="kicker">E todas as motos? E os carros e caminhões?</div>
+  <h2>A coleta completa da FIPE</h2>
+  <table class="tabela qtd">
+    <thead><tr><th>Tipo</th><th>Marcas</th><th>Modelos</th><th>Preços</th><th>Requisições</th><th>Tempo a 60/min</th></tr></thead>
+    <tbody>
+      <tr><td>Motos</td><td>103</td><td>2.037</td><td>~9.700</td><td>~11.800</td><td>~3,4 h</td></tr>
+      <tr><td>Caminhões</td><td>29</td><td>2.000</td><td>~11.600</td><td>~14.000</td><td>~3,9 h</td></tr>
+      <tr class="destaque"><td>Carros</td><td>108</td><td>7.385</td><td>~30.800</td><td>~39.400</td><td>~11 h</td></tr>
+    </tbody>
+  </table>
+  <p class="frag" style="margin-top:48px">Feito pelo coletor que a IA escreveu, com <span class="mono">--tipo moto|carro|caminhao</span>: <span class="marcador">zero token</span>.</p>
+  <p class="frag">A IA aprende a API uma vez. <strong>O código coleta para sempre.</strong></p>
+  <aside class="notas">
+    <p>Estimativas do próprio coletor da Rodada 4a (opção --estimar): marcas e modelos são contagens exatas; os anos vêm de uma amostra de 60 modelos sorteados, por isso os preços têm margem (carros ±5.400, caminhões ±1.600). O tempo já inclui ~3% de repetições por bloqueio 429. Nenhuma coleta completa foi rodada.</p>
+    <p>Testado em uma marca de cada tipo: Royal Enfield (motos, 206 linhas), MAN (caminhões, 23) e Cadillac (carros, 11).</p>
+    <p>Se a IA fizesse esse loop, cada uma dessas ~39 mil respostas passaria pelo contexto do modelo.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 18a. ANATOMIA DO PROMPT -->
+<section class="slide" data-titulo="Anatomia do prompt">
+  <div class="kicker">Para levar · funciona com qualquer API</div>
+  <h2>Anatomia de um prompt estruturado</h2>
+  <table class="tabela prosa">
+    <thead><tr><th>Bloco</th><th>O que entra</th><th>O que evitar</th></tr></thead>
+    <tbody>
+      <tr class="frag"><td>Tarefa</td><td>O que entregar e onde</td><td>"Explore e veja o que dá"</td></tr>
+      <tr class="frag"><td>Regras</td><td>Limite de requisições, o que não fazer</td><td>Descobrir o limite tomando bloqueio</td></tr>
+      <tr class="frag"><td>Conhecimento</td><td>Passo a passo: endpoint, corpo, o que extrair</td><td><span class="mono">curl</span> do navegador, cookies, listas</td></tr>
+      <tr class="frag"><td>Armadilhas</td><td>429, erro com HTTP 200, códigos escondidos</td><td>Deixar a IA redescobrir</td></tr>
+      <tr class="frag"><td>Saída</td><td>Colunas, separador, codificação</td><td>Cada execução inventar um formato</td></tr>
+    </tbody>
+  </table>
+  <p class="frag" style="margin-top:36px;font-size:30px">Copiado x estruturado, mesmo conhecimento: <strong>US$ 1,85 → US$ 1,26</strong>. Sem formato definido, cada rodada entregou um CSV diferente.</p>
+  <aside class="notas">
+    <p>O prompt completo da Rodada 4 está em medicao/prompt-rodada4.md e serve de modelo. A ordem importa pouco; o que importa é não faltar armadilha nem formato, e não sobrar ruído (cabeçalhos, cookies, listas de exemplo), porque tudo isso é relido a cada volta.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 18b. CAIXA DE FERRAMENTAS -->
+<section class="slide" data-titulo="Caixa de ferramentas">
+  <div class="kicker">Para levar · o agente da Rodada 4</div>
+  <h2>Caixa de ferramentas do tamanho da tarefa</h2>
+  <div class="grid-2" style="grid-template-columns:1.05fr 1fr">
+    <div class="code" style="font-size:24px"><span class="t">.claude/agents/coletor-enxuto.md</span>---
+<span class="k">name</span>: coletor-enxuto
+<span class="k">tools</span>: <span class="s">Bash, Read, Write</span>
+---
+Você executa coletas de dados em APIs
+HTTP seguindo o conhecimento do pedido.
+- Escreva cada arquivo de uma vez.
+- Rode comandos demorados numa única
+  chamada que espera o fim.
+- Imprima resumos, não respostas inteiras.</div>
+    <div>
+      <p style="font-size:30px">Contexto antes da primeira pergunta:</p>
+      <p style="font:700 64px/1.2 var(--font-mono);color:var(--text-primary);margin:8px 0 30px">61,5 mil <span class="laranja">→ 5,6 mil</span></p>
+      <ul class="lista" style="gap:16px">
+        <li class="frag" style="font-size:28px"><strong>Subagente por tipo de trabalho</strong>, com só as ferramentas dele</li>
+        <li class="frag" style="font-size:28px"><strong>Processo separado</strong> (<span class="mono">claude -p</span>) para tarefas repetidas</li>
+        <li class="frag" style="font-size:28px"><strong>Conectores e MCP</strong> ligados só quando a tarefa pede</li>
+        <li class="frag" style="font-size:28px"><strong>Uma conversa por assunto</strong></li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>Tudo o que está ligado na sessão (ferramentas, servidores MCP, skills e plugins) entra no contexto de toda volta, mesmo sem ser usado. O agente padrão carregava navegador, Figma, Gmail, Drive…</p>
+    <p>Comando da Rodada 4: claude -p --agent coletor-enxuto --tools "Bash,Read,Write" --strict-mcp-config --model claude-sonnet-5-5 --output-format json. Script: medicao/rodar_enxuto.sh.</p>
+    <p>Detalhe prático: tipos novos de subagente só carregam no início da sessão.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 18c. MEÇA -->
+<section class="slide" data-titulo="Meça">
+  <div class="kicker">Para levar · meça antes de otimizar</div>
+  <h2>Faça o que eu digo… uma conversa por assunto</h2>
+  <div class="grid-2" style="align-items:stretch">
+    <div class="card"><span class="num">Preparo da palestra, numa conversa só</span><div style="font:700 80px var(--font-mono);color:var(--color-brand-500)">~204 mil</div><p>tokens relidos <strong>a cada resposta</strong></p><p class="muted" style="font-size:24px;margin-top:14px">Muitas tarefas numa conversa só: demo, slides, publicação… 76 respostas, US$ 11,46 até ali.</p></div>
+    <div class="card frag"><span class="num">Uma tarefa, contexto limpo (Rodada 4b)</span><div style="font:700 80px var(--font-mono);color:var(--text-primary)">~11 mil</div><p>tokens relidos <strong>a cada resposta</strong></p><p class="muted" style="font-size:24px;margin-top:14px">Só o coletor da FIPE. 6 respostas, US$ 0,17.</p></div>
+  </div>
+  <p class="frag" style="margin-top:50px;font-size:30px">O <span class="mono laranja">usage</span> de cada resposta é o seu plano de execução. Está no transcript da sessão e no <span class="mono">--output-format json</span> do <span class="mono">claude -p</span>.</p>
+  <aside class="notas">
+    <p>Não é a mesma tarefa: a conversa fez muitas coisas, e a Rodada 4b, uma só. A comparação justa é o quanto cada resposta relê. Na conversa longa, cada resposta relia ~204 mil tokens (15,5 milhões em 76 respostas, medido antes de começar a FIPE). Na 4b, ~11 mil (66,6 mil em 6).</p>
+    <p>A conversa misturou Conta Azul, slides, Apps Script e FIPE, e cada nova resposta relia todo esse histórico. Tema novo, conversa nova; trabalho pesado, subagente.</p>
+    <p>Como medimos: um marco com a hora antes da tarefa e a soma do usage do transcript (.jsonl) depois. Script: medicao/medir_sessao.py.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 19. PUSHDOWN -->
+<section class="slide" data-titulo="Pushdown">
+  <div class="kicker">A lição</div>
+  <div class="frase">Empurre o trabalho para o lugar <span class="laranja">mais barato</span>.<br>O mais caro é o contexto do modelo.</div>
+  <p class="frag" style="margin-top:60px">Você estrutura → IA escreve o código → <strong>código coleta</strong>.</p>
+</section>
+
+<!-- ============================================================ 20. BOAS PRÁTICAS CONSUMO -->
+<section class="slide" data-titulo="Quem consome">
+  <div class="kicker">Checklist · quem consome API com IA</div>
+  <h2>Antes de soltar a IA na API</h2>
+  <table class="tabela prosa">
+    <thead><tr><th>Prática</th><th>O que medimos</th></tr></thead>
+    <tbody>
+      <tr class="frag"><td>Estruture o conhecimento</td><td>Copiado → estruturado: −32%</td></tr>
+      <tr class="frag"><td>Escreva armadilhas e formato</td><td>Nada redescoberto; CSV certo de primeira</td></tr>
+      <tr class="frag"><td>Caixa do tamanho da tarefa</td><td>Contexto inicial: 61,5 mil → 5,6 mil tokens</td></tr>
+      <tr class="frag"><td>Menos voltas</td><td>19 → 5 chamadas ao modelo</td></tr>
+      <tr class="frag"><td>Modelo certo para a tarefa</td><td>Opus → Sonnet: −56%, mesmo resultado</td></tr>
+      <tr class="frag"><td>Loop com o código</td><td>Coleta completa: ~11.800 requisições, zero token</td></tr>
+    </tbody>
+  </table>
+  <aside class="notas">
+    <p>Especificar a saída: nas três rodadas, cada subagente escolheu nomes de coluna, ordem e separador diferentes. Os dados eram iguais; os arquivos, não.</p>
+  </aside>
+</section>
+
+<!-- ============================================================ 21. BOAS PRÁTICAS EXPOSIÇÃO -->
+<section class="slide" data-titulo="Quem expõe">
+  <div class="kicker">Boas práticas · quem expõe API ou servidor MCP</div>
+  <h2>Projete ferramentas para quem paga por token</h2>
+  <div class="grid-2">
+    <ul class="lista">
+      <li class="frag"><strong>Descrições enxutas</strong>: elas vão em toda chamada.</li>
+      <li class="frag"><strong>Respostas pequenas</strong>: só os campos úteis.</li>
+    </ul>
+    <ul class="lista">
+      <li class="frag"><strong>Endpoints de agregação</strong> para as perguntas comuns.</li>
+      <li class="frag"><strong>Erros claros</strong>: erro confuso gera nova tentativa, que custa tokens de novo.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ 22. ALERTA -->
+<section class="slide" data-titulo="Cuidado">
+  <div class="kicker">Um alerta honesto</div>
+  <h2>Economizar demais também erra.</h2>
+  <p>Contexto pobre gera resposta errada, e resposta errada é o token mais caro que existe.</p>
+  <p class="frag" style="margin-top:40px">O objetivo não é o contexto <span class="muted">mínimo</span>. É o contexto <span class="marcador">certo</span>.</p>
+</section>
+
+<!-- ============================================================ 23. FECHAMENTO -->
+<section class="slide sem-moldura capa" data-titulo="Obrigado">
+  <div class="fechamento">
+    <div>
+      <div class="frase" style="font-size:60px">A IA não substitui quem entende a fonte de dados.<br><span class="laranja">Ela multiplica o valor dessa pessoa.</span></div>
+      <div class="contato" style="flex-direction:column;gap:18px;margin-top:56px;font-size:26px">
+        <a href="https://github.com/rafaslemos/select-star-na-era-da-ia" target="_blank" rel="noopener"><b>GitHub</b>rafaslemos/select-star-na-era-da-ia</a>
+        <a href="https://www.linkedin.com/in/orafaslemos/" target="_blank" rel="noopener"><b>LinkedIn</b>/in/orafaslemos</a>
+      </div>
+      <div class="autor" style="margin-top:64px"><img src="assets/logo-chora-api-dark.png" alt="Chora API Revolution" style="height:84px"></div>
+    </div>
+    <div class="qrs">
+      <a class="qr-card" href="https://github.com/rafaslemos/select-star-na-era-da-ia" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" class="qr" role="img" aria-label="QR code do repositório no GitHub" shape-rendering="crispEdges"><path fill="#fff" d="M0 0h37v37h-37z"/><path class="qrline" stroke="#0a0a0a" d="M2 2.5h7m1 0h1m1 0h2m5 0h4m2 0h1m2 0h7m-33 1h1m5 0h1m1 0h1m2 0h1m2 0h1m1 0h2m4 0h3m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m3 0h4m1 0h2m4 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h2m2 0h1m1 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m3 0h1m2 0h2m1 0h1m6 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m2 0h3m2 0h9m1 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h2m1 0h1m3 0h3m5 0h1m-24 1h1m1 0h2m1 0h3m1 0h2m3 0h2m1 0h2m2 0h2m1 0h1m1 0h1m2 0h1m1 0h2m-33 1h1m1 0h3m3 0h4m1 0h2m1 0h1m1 0h4m1 0h1m2 0h2m1 0h2m1 0h1m-31 1h1m1 0h1m1 0h1m1 0h2m1 0h3m2 0h2m2 0h1m1 0h2m1 0h5m1 0h2m-32 1h3m5 0h2m1 0h1m2 0h1m2 0h1m6 0h1m1 0h1m1 0h1m1 0h1m-30 1h1m3 0h2m2 0h1m1 0h1m1 0h1m1 0h1m1 0h1m3 0h4m2 0h2m1 0h2m-32 1h2m1 0h2m1 0h2m2 0h4m2 0h1m1 0h4m1 0h1m2 0h1m3 0h1m-27 1h2m1 0h4m1 0h2m4 0h3m4 0h2m1 0h1m-29 1h1m1 0h3m1 0h2m1 0h1m3 0h2m5 0h1m1 0h1m1 0h3m1 0h2m-29 1h2m2 0h2m2 0h2m2 0h1m3 0h1m2 0h2m2 0h2m1 0h3m-31 1h3m1 0h1m5 0h4m1 0h1m2 0h1m1 0h1m1 0h5m1 0h2m1 0h2m-32 1h2m3 0h2m1 0h2m1 0h2m1 0h2m1 0h1m1 0h1m3 0h1m2 0h2m1 0h2m-29 1h3m1 0h2m1 0h1m1 0h2m2 0h2m1 0h1m3 0h4m1 0h1m2 0h2m-33 1h1m2 0h4m2 0h2m2 0h4m4 0h1m5 0h1m1 0h2m-31 1h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h5m1 0h4m1 0h1m1 0h2m3 0h1m1 0h1m-30 1h2m1 0h1m4 0h3m1 0h1m4 0h2m1 0h5m2 0h3m-32 1h5m1 0h4m1 0h1m1 0h2m2 0h3m3 0h1m1 0h2m1 0h1m1 0h2m-33 1h1m1 0h2m1 0h2m3 0h1m3 0h1m2 0h1m4 0h8m1 0h1m-24 1h4m2 0h3m2 0h2m3 0h1m3 0h2m-30 1h7m1 0h6m3 0h4m1 0h3m1 0h1m1 0h1m-29 1h1m5 0h1m1 0h2m1 0h3m1 0h4m1 0h5m3 0h5m-33 1h1m1 0h3m1 0h1m4 0h1m1 0h1m2 0h6m1 0h6m1 0h1m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m1 0h2m2 0h2m2 0h4m3 0h1m1 0h1m2 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m5 0h2m3 0h1m1 0h1m3 0h2m2 0h1m-31 1h1m5 0h1m2 0h2m1 0h1m1 0h1m2 0h1m4 0h3m1 0h4m2 0h1m-33 1h7m1 0h1m1 0h1m2 0h1m2 0h3m2 0h1m3 0h2m1 0h1m1 0h1"/></svg>
+        <span>GitHub<small>deck, prompts e coletores</small></span>
+      </a>
+      <a class="qr-card" href="https://www.linkedin.com/in/orafaslemos/" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" class="qr" role="img" aria-label="QR code do LinkedIn de Rafael Lemos" shape-rendering="crispEdges"><path fill="#fff" d="M0 0h33v33h-33z"/><path class="qrline" stroke="#0a0a0a" d="M2 2.5h7m2 0h3m2 0h1m3 0h1m3 0h7m-29 1h1m5 0h1m1 0h1m5 0h1m1 0h2m2 0h1m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m2 0h1m2 0h3m2 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m2 0h2m2 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h4m2 0h5m1 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m4 0h4m7 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h2m1 0h1m2 0h1m1 0h1m2 0h2m-21 1h1m5 0h1m1 0h1m2 0h4m2 0h3m1 0h2m2 0h3m-28 1h2m1 0h1m3 0h3m2 0h1m2 0h1m1 0h4m2 0h2m1 0h2m-27 1h1m1 0h2m1 0h3m4 0h1m1 0h3m4 0h1m-18 1h1m4 0h3m1 0h2m3 0h2m2 0h1m1 0h1m-24 1h5m3 0h2m2 0h2m4 0h1m1 0h2m4 0h1m-29 1h1m1 0h2m1 0h1m1 0h2m2 0h3m1 0h6m1 0h1m1 0h1m2 0h2m-29 1h3m3 0h1m1 0h3m2 0h4m1 0h1m1 0h4m1 0h2m-27 1h1m4 0h1m2 0h1m2 0h1m4 0h1m3 0h5m1 0h1m1 0h1m-29 1h1m2 0h1m1 0h2m1 0h3m4 0h1m1 0h1m1 0h1m3 0h1m1 0h2m-27 1h2m1 0h2m2 0h1m3 0h1m3 0h6m1 0h3m1 0h3m-29 1h2m4 0h2m2 0h1m2 0h4m2 0h2m4 0h1m2 0h1m-29 1h1m1 0h2m4 0h3m1 0h1m2 0h2m1 0h1m1 0h1m1 0h3m-25 1h1m1 0h3m1 0h1m3 0h1m4 0h1m1 0h2m1 0h5m1 0h3m-21 1h1m3 0h4m1 0h2m1 0h1m3 0h2m-26 1h7m2 0h3m1 0h5m1 0h2m1 0h1m1 0h3m-27 1h1m5 0h1m3 0h2m1 0h1m5 0h2m3 0h1m-25 1h1m1 0h3m1 0h1m3 0h4m1 0h2m2 0h7m1 0h1m-28 1h1m1 0h3m1 0h1m4 0h1m3 0h5m1 0h1m1 0h1m1 0h2m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h2m3 0h1m1 0h1m1 0h1m1 0h7m-28 1h1m5 0h1m5 0h2m1 0h2m6 0h1m1 0h2m1 0h1m-29 1h7m1 0h1m1 0h1m2 0h5m1 0h1m2 0h5"/></svg>
+        <span>LinkedIn<small>Rafael Lemos</small></span>
+      </a>
+    </div>
+  </div>
+  <aside class="notas">
+    <h4>41:00 · Perguntas (4 min)</h4>
+    <p>Deixe este slide na tela durante as perguntas: um QR code leva ao repositório com tudo o que foi mostrado, o outro ao LinkedIn.</p>
+  </aside>
+</section>
+
+</div></div>
+
+<div id="progresso"></div>
+<div id="contador"></div>
+<div id="notas"></div>
+<div id="ajuda">→ avançar · ← voltar · F tela cheia · O visão geral · N notas</div>
+
+<script>
+(function () {
+  const deck = document.getElementById('deck');
+  const slides = Array.from(deck.querySelectorAll('.slide'));
+  const progresso = document.getElementById('progresso');
+  const contador = document.getElementById('contador');
+  const painelNotas = document.getElementById('notas');
+  let atual = 0, passo = 0;
+
+  // rodapé com marca e numeração em todo slide que não é capa nem seção
+  slides.forEach((s, i) => {
+    if (s.classList.contains('capa')) return;
+    const r = document.createElement('div');
+    r.className = 'rodape';
+    r.innerHTML = '<span class="marca">SELECT * na era da IA</span><span>SQL Saturday Florianópolis</span>';
+    s.appendChild(r);
+  });
+
+  function escalar() {
+    if (document.body.classList.contains('visao')) return;
+    const k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    deck.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+  }
+
+  const frags = s => Array.from(s.querySelectorAll('.frag'));
+
+  function contar(el) {
+    const alvo = Number(el.dataset.contar), ini = performance.now(), dur = 1600;
+    (function quadro(t) {
+      const p = Math.min((t - ini) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(alvo * e).toLocaleString('pt-BR');
+      if (p < 1) requestAnimationFrame(quadro);
+    })(ini);
+  }
+
+  function animarEntrada(s) {
+    s.querySelectorAll('[data-contar]').forEach(contar);
+    const segs = s.querySelectorAll('.seg');
+    if (segs.length) {
+      segs.forEach(g => { g.style.width = '0'; });
+      requestAnimationFrame(() => requestAnimationFrame(() =>
+        segs.forEach(g => { g.style.width = g.dataset.largura + '%'; })));
+    }
+    const barras = s.querySelectorAll('.enchimento');
+    if (barras.length) {
+      const max = Math.max(...Array.from(barras, b => Number(b.dataset.valor)));
+      barras.forEach(b => { b.style.width = '0'; });
+      requestAnimationFrame(() => requestAnimationFrame(() =>
+        barras.forEach(b => { b.style.width = (Number(b.dataset.valor) / max * 100) + '%'; })));
+    }
+  }
+
+  function mostrar(i, p, animar) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    const mudou = i !== atual;
+    atual = i;
+    slides.forEach((s, j) => {
+      s.classList.toggle('ativo', j === i);
+      s.classList.toggle('passado', j < i);
+    });
+    const fs = frags(slides[i]);
+    passo = p === 'fim' ? fs.length : Math.max(0, Math.min(fs.length, p));
+    fs.forEach((f, j) => f.classList.toggle('visivel', j < passo));
+    if (mudou || animar) animarEntrada(slides[i]);
+
+    progresso.style.width = ((i + 1) / slides.length * 100) + '%';
+    contador.textContent = (i + 1) + ' / ' + slides.length;
+    const n = slides[i].querySelector('aside.notas');
+    painelNotas.innerHTML = '<h4>' + (i + 1) + '. ' + (slides[i].dataset.titulo || '') + '</h4>' + (n ? n.innerHTML : '<p class="muted">Sem notas.</p>');
+    try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) { /* data: URL ou iframe do Apps Script */ }
+  }
+
+  function avancar() {
+    if (passo < frags(slides[atual]).length) { passo++; mostrar(atual, passo); }
+    else if (atual < slides.length - 1) mostrar(atual + 1, 0);
+  }
+  function voltar() {
+    if (passo > 0) { passo--; mostrar(atual, passo); }
+    else if (atual > 0) mostrar(atual - 1, 'fim');
+  }
+
+  function alternarVisao() {
+    const on = document.body.classList.toggle('visao');
+    if (on) { deck.style.transform = 'none'; slides[atual].scrollIntoView({ block: 'center' }); }
+    else escalar();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (document.body.classList.contains('visao') && k !== 'o' && k !== 'escape') return;
+    if (['arrowright', 'pagedown', ' ', 'enter'].includes(k)) { e.preventDefault(); avancar(); }
+    else if (['arrowleft', 'pageup', 'backspace'].includes(k)) { e.preventDefault(); voltar(); }
+    else if (k === 'home') mostrar(0, 0);
+    else if (k === 'end') mostrar(slides.length - 1, 'fim');
+    else if (k === 'f') (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()).catch(() => {});
+    else if (k === 'n') document.body.classList.toggle('com-notas', painelNotas.classList.toggle('aberto'));
+    else if (k === 'o' || (k === 'escape' && document.body.classList.contains('visao'))) alternarVisao();
+  });
+
+  deck.addEventListener('click', e => {
+    if (document.body.classList.contains('visao')) {
+      const s = e.target.closest('.slide');
+      if (s) { alternarVisao(); mostrar(slides.indexOf(s), 0, true); }
+      return;
+    }
+    if (e.target.closest('a')) return;
+    e.clientX > window.innerWidth / 3 ? avancar() : voltar();
+  });
+
+  let toqueX = null;
+  window.addEventListener('touchstart', e => { toqueX = e.touches[0].clientX; }, { passive: true });
+  window.addEventListener('touchend', e => {
+    if (toqueX === null) return;
+    const dx = e.changedTouches[0].clientX - toqueX;
+    if (Math.abs(dx) > 50) dx < 0 ? avancar() : voltar();
+    toqueX = null;
+  });
+
+  window.addEventListener('resize', escalar);
+  window.addEventListener('hashchange', () => {
+    const n = parseInt(location.hash.slice(1), 10) - 1;
+    if (Number.isFinite(n) && n !== atual) mostrar(n, 0);
+  });
+  setTimeout(() => document.getElementById('ajuda').classList.add('sumiu'), 4000);
+
+  escalar();
+  const inicial = parseInt(location.hash.slice(1), 10);
+  atual = -1;
+  mostrar(Number.isFinite(inicial) ? inicial - 1 : 0, 0, true);
+})();
+</script>
+</body>
+</html>

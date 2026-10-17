@@ -2,6 +2,14 @@
 cache/
 cache_fipe/
 cache-demo/
+cache-amazonas/
+cache-amazonas-teste/
+
+# Saidas locais do coletor (geradas ao rodar)
+fipe/rodada4a-enxuto-opus/honda/
+
+# Lixo do macOS
+.DS_Store
 
 # Gerado por slides/build.py
 slides/apps-script/Index.html
